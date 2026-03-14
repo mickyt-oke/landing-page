@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags for SEO -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page | Foreigners Registration</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com; script-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:;">
+  <meta name="description" content="Apply for overstay clearance with the Nigeria Immigration Service. Regularize your status, avoid penalties, and stay compliant with immigration regulations. Fast, secure, and transparent application process.">
+  <meta name="keywords" content="Nigeria Immigration Service, NIS, overstay clearance, visa regularization, immigration compliance, migrant portal, document upload, application process">
+  <meta name="author" content="Nigeria Immigration Service">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#004080">
+
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css" integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/favicon.ico" type="image/ico">
+  <!-- apple-touch-icon -->
+  <link rel="apple-touch-icon" href="assets/images/nis.png">
+
+  <!-- Open Graph Meta Tags for social media sharing -->
+  <meta property="og:title" content="Migrants Overstay Portal | Nigeria Immigration Service">
+  <meta property="og:description" content="Apply for overstay clearance with the Nigeria Immigration Service. Regularize your status, avoid penalties, and stay compliant with immigration regulations. Fast, secure, and transparent application process.">
+  <meta property="og:image" content="assets/images/nis.png">
+  <meta property="og:url" content="https://immigration.gov.ng">  
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo-container">
+          <img src="{{ asset('assets/images/nis-logo.jpg') }}" alt="NIS Logo" class="logo-img-mobile" width="110" height="38" onerror="this.src='https://via.placeholder.com/40?text=NIS'">
+          <div class="logo-text">
+            <span class="logo-text-main"></span>
+          </div>
+        </div>
+
+        <div class="nav-menu">
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              <i class="fa-user fa-solid"></i>
+              Account
+              <i class="fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+              <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+            </div>
+          </div>
+        </div>
+
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <div class="modal-container">
+      <button class="close-modal" aria-label="Close login modal">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <div class="modal-logo">
+          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
+        </div>
+        <h2>Welcome Back</h2>
+        <p>Login to your Account</p>
+      </div>
+
+      <div class="modal-body">
+        <form action="{{ route('login') }}" method="POST">
+              @csrf
+          <div class="form-group">
+            <label for="loginEmail">Email Address</label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="loginEmail" name="email" placeholder="Enter your email" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+              <button type="button" class="password-toggle-btn" data-input="loginPassword" aria-label="Toggle password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="modal-btn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+
+          <div class="modal-footer">
+            Don't have an account? <a href="#" class="modal-switch-trigger" data-from="login" data-to="register">Register here</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div class="modal" id="registerModal">
+    <div class="modal-container">
+      <button class="close-modal" aria-label="Close registration modal">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <div class="modal-logo">
+          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
+        </div>
+        <h4>Create New Account</h4>
+        <p></p>
+      </div>
+
+      <div class="modal-body mb-0 mx-0">
+        <div class="container" style="display: block;">
+          <form action="{{ route ('register') }}" method="POST">
+            @csrf
+            <div class="form-group">
+              <label for="Surname">Surname</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="sname" name="sname" placeholder="Enter surname" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="FirstName">First Name</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="fname" name="fname" placeholder="Enter first name" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="OtherNames">Other Names</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user"></i>
+                <input type="text" id="mname" name="mname" placeholder="Enter other names (optional)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Passport">Passport Number</label>
+              <div class="input-wrapper">
+                <i class="fas fa-passport"></i>
+                <input type="text" id="pptno" name="pptno" placeholder="Enter passport number" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="PptType">Type of Passport</label>
+              <div class="input-wrapper">
+                <i class="fas fa-calendar"></i>
+                <select id="PptType" name="ppttype" required>
+                  <option value="" disabled selected>Select passport type</option>
+                  <option value="ordinary">Ordinary</option>
+                  <option value="diplomatic">Diplomatic</option>
+                  <option value="service">Service</option>
+                </select>
+              </div>
+            <!-- nationality list passed from controller -->
+             <div class="form-group">
+              <label for="Nationality">Nationality</label>
+              <div class="input-wrapper">
+                <i class="fas fa-globe"></i>
+                <select id="Nationality" name="nationality" required>
+                  <option value="" disabled selected>Select Nationality</option>
+                  @foreach ($countries as $country)
+                    <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="PassportExpiry">Passport Expiry Date</label>
+              <div class="input-wrapper">
+                <i class="fas fa-calendar"></i>
+                <input type="date" id="PassportExpiry" name="pptexpiry" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Email">Email Address</label>
+              <div class="input-wrapper">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="Email" name="email" placeholder="Enter email" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Password1">Password</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="Password1" name="password1" placeholder="Create password" required>
+                <button type="button" class="password-toggle-btn" data-input="Password1" aria-label="Toggle password visibility">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Password2">Confirm Password</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="Password2" name="password_confirmation" placeholder="Confirm password" required>
+                <button type="button" class="password-toggle-btn" data-input="regPassword2" aria-label="Toggle password visibility">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="modal-btn" data-submit-application="true">Submit</button>
+          </div>
+           <div class="modal-footer">
+            Already have an account? <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-bg">
+        <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer" onerror="this.src='https://images.unsplash.com/photo-1578575436955-ef29da568c6c?w=1600'">
+      </div>
+      <div class="hero-overlay"></div>
+      
+      <div class="container">
+        <div class="hero-content">
+          <h1>Registration of Foreigners</h1>
+          <p>Affected by the Middle-East Crisis</p>
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-outline modal-trigger" data-modal="login"> Apply Now
+            </a>
+            <a href="#" class="btn btn-outline">
+              <i class="fas fa-search"></i> Check Status
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAROUSEL SECTION -->
+    <section class="section-sm">
+      <div class="container">
+        <div class="carousel-container">
+          <div class="carousel">
+            <div class="carousel-track" id="carouselTrack">
+              <div class="carousel-slide">
+                <div class="carousel-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="carousel-content">
+                  <h3>Avoid Overstay Penalties</h3>
+                  <p>Maintain Immigration Compliance</p>
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="carousel-icon">
+                  <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="carousel-content">
+                  <h3>Upload Required Documents</h3>
+                  <p>Secure Online Submission</p>
+                </div>
+              </div>
+              <div class="carousel-slide">
+                <div class="carousel-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="carousel-content">
+                  <h3>Fast Review Process</h3>
+                  <p>Email Notification Updates</p>
+                </div>
+              </div>
+            </div>
+            
+            <button class="carousel-btn prev" id="prevBtn">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-btn next" id="nextBtn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          
+          <div class="carousel-dots" id="carouselDots">
+            <button class="dot active"></button>
+            <button class="dot"></button>
+            <button class="dot"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NIS OFFICERS GALLERY -->
+    <section class="section">
+      <div class="container">
+        <h2 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Our Immigration Officers</h2>
+        <p style="text-align: center; color: var(--gray); max-width: 600px; margin: 0 auto 3rem;">Dedicated professionals ensuring border security and immigration compliance</p>
+        
+        <div class="gallery-grid">
+          <div class="gallery-item">
+            <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer 2" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+          </div>
+          <div class="gallery-item">
+            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="NIS Officer 3" onerror="this.src='https://images.unsplash.com/photo-1578575436955-ef29da568c6c?w=800'">
+          </div>
+          <div class="gallery-item">
+            <img src="{{ asset('assets/images/nis_officer4.jpg') }}" alt="NIS Officer 4" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="section" style="background: var(--light);">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-image">
+            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="Immigration officers" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+          </div>
+          <div class="about-content">
+            <h2>About the Portal</h2>
+            <p class="mb-4">The Migrants Overstay Portal enables foreign nationals to regularize their stay and comply with immigration regulations under the Nigeria Immigration Service.</p>
+            <ul class="about-features">
+              <li>
+                <i class="fas fa-check-circle"></i>
+                <span>Transparent online application process</span>
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i>
+                <span>Secure document upload with encryption</span>
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i>
+                <span>Expert guidance from NIS officials</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section">
+      <div class="container">
+        <h2 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">How It Works</h2>
+        <p style="text-align: center; color: var(--gray); max-width: 600px; margin: 0 auto 3rem;">Simple steps to regularize your overstay status</p>
+        
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h3>Register Account</h3>
+            <p>Create a secure profile with your basic information and verify your identity.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">
+              <i class="fas fa-passport"></i>
+            </div>
+            <h3>Submit Travel Details</h3>
+            <p>Enter passport information, entry date, and duration of stay details.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Upload & Apply</h3>
+            <p>Upload required documents and submit your application for review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTICE SECTION -->
+    <section class="section-sm">
+      <div class="container">
+        <div class="notice">
+          <div class="notice-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="notice-content">
+            <h4>Important Notice</h4>
+            <p>Overstaying without proper clearance may attract penalties under Nigerian Immigration Regulations. Apply now to regularize your status.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>About NIS</h4>
+          <p style="color: rgba(255,255,255,0.8); line-height: 1.8;">Nigeria Immigration Service – protecting borders and facilitating migration with integrity and excellence.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Immigration Policies</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Visa Information</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul class="contact-info">
+            <li><i class="fas fa-envelope"></i> migrant.overstay@immigration.gov.ng</li>
+            <li><i class="fas fa-phone"></i> +234 800 123 4567</li>
+            <li><i class="fas fa-map-marker-alt"></i> Abuja, Nigeria</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Nigeria Immigration Service. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Carousel Script -->
+  <script src="{{ asset('assets/js/carousel.js') }}" defer></script>
+  <!-- Main Application Script -->
+  <script src="{{ asset('assets/js/app.js') }}" defer></script>
+</body>
+</html>

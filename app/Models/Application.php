@@ -11,7 +11,7 @@ class Application extends Model
 {
     use HasFactory;
 
-    public const STATUS_SUBMITTED = 'submitted';
+    public const STATUS_PENDING = 'pending';
     public const STATUS_UNDER_REVIEW = 'under_review';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';

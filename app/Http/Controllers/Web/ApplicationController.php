@@ -37,7 +37,7 @@ class ApplicationController extends Controller
                 'visa_category' => $validated['visa_category'],
                 'arrival_date' => $validated['arrival_date'],
                 'overstay_days' => $overstayDays,
-                'status' => Application::STATUS_SUBMITTED,
+                'status' => Application::STATUS_PENDING,
                 'applicant_note' => $validated['applicant_note'] ?? null,
             ]);
 
@@ -83,9 +83,10 @@ class ApplicationController extends Controller
 
     public function download(ApplicationDocument $document)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User|null $user */
+        $user = request()->user();
 
-        if (! $user) {
+        if (! $user instanceof \App\Models\User) {
             abort(403);
         }
 
@@ -104,6 +105,9 @@ class ApplicationController extends Controller
             abort(404);
         }
 
-        return Storage::disk($document->storage_disk)->download($document->storage_path, $document->original_name);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk($document->storage_disk);
+
+        return $disk->download($document->storage_path, $document->original_name);
     }
 }

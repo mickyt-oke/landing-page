@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
@@ -20,6 +21,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'role' => User::ROLE_USER,
         ]);
 
         $token = JWTAuth::fromUser($user);
@@ -29,27 +31,26 @@ class AuthController extends Controller
             'user' => $user,
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
         ], 201);
     }
-// login method with JWT authentication
+// login method with JWT authentication and redirect user to dashboard based on role
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
 
-        if (! $token = Auth::guard('api')->attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials.',
-            ], 401);
+        if (!$token = Auth::guard('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Invalid credentials.'], 401);
         }
 
         return response()->json([
             'message' => 'Logged in successfully.',
+            'user' => Auth::guard('api')->user(),
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
         ]);
-    }
+    }   
 
     public function me(): JsonResponse
     {
@@ -70,9 +71,9 @@ class AuthController extends Controller
     public function refresh(): JsonResponse
     {
         return response()->json([
-            'access_token' => Auth::guard('api')->refresh(),
+            'access_token' => JWTAuth::refresh(),
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
         ]);
     }
 }

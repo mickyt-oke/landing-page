@@ -22,7 +22,7 @@ class StartReviewRequest extends FormRequest
             User::ROLE_REVIEWER,
             User::ROLE_ADMIN,
             User::ROLE_SUPERADMIN,
-        ]) && $application->status === Application::STATUS_SUBMITTED;
+        ]) && $application->status === Application::STATUS_PENDING;
     }
 
     public function rules(): array

@@ -1,12 +1,13 @@
 /**
- * Migrants Overstay Portal - Main Application Script
+ * Foreigners Registration - Main Application Script
  * Handles modals, forms, registration steps, and navigation
  */
 
 (function() {
   'use strict';
 
-  // ===== STATE MANAGEMENT =====
+  // ===== CONSTANTS / STATE =====
+  const TOTAL_STEPS = 4;
   let currentStep = 1;
 
   // ===== DOM REFERENCES =====
@@ -80,10 +81,12 @@
       });
     });
 
-    // Login form submission
+    // Login form submission to use authentication API
     if (loginForm) {
       loginForm.addEventListener('submit', handleLogin);
     }
+
+
 
     // Registration step navigation
     document.querySelectorAll('[data-next-step]').forEach(el => {
@@ -104,11 +107,23 @@
       });
     });
 
-    // Submit application button
-    const submitBtn = document.querySelector('[data-submit-application]');
+    // Submit application button on review step
+    const submitBtn = document.getElementById('submitApplicationBtn');
     if (submitBtn) {
-      submitBtn.addEventListener('click', submitApplication);
+      submitBtn.addEventListener('click', function() {
+        submitApplication();
+      });
     }
+  
+    // Check status modal and button
+    const checkStatusBtn = document.getElementById('checkStatusBtn');
+    if (checkStatusBtn) {
+      checkStatusBtn.addEventListener('click', function() {
+        openModal('checkStatus');
+      });
+    }
+
+
 
     // Visa category change
     if (visaCategory) {
@@ -129,8 +144,31 @@
       }
     });
 
-    // Header sticky shadow
-    window.addEventListener('scroll', updateHeaderShadow);
+    // Completed step click navigation (delegated; avoids duplicate listeners)
+    const stepIndicator = document.querySelector('.step-indicator');
+    if (stepIndicator) {
+      stepIndicator.addEventListener('click', function(e) {
+        const stepEl = e.target.closest('.step.completed');
+        if (!stepEl) return;
+
+        const stepNum = parseInt(stepEl.id.replace('step', ''), 10);
+        if (!isNaN(stepNum) && stepNum < currentStep) {
+          showStep(stepNum);
+          showAlert('Navigated to step ' + stepNum, 'success');
+        }
+      });
+    }
+
+    // Header sticky shadow (throttled with requestAnimationFrame)
+    let headerTicking = false;
+    window.addEventListener('scroll', function() {
+      if (headerTicking) return;
+      headerTicking = true;
+      requestAnimationFrame(() => {
+        updateHeaderShadow();
+        headerTicking = false;
+      });
+    });
   }
 
   // ===== MOBILE MENU =====
@@ -198,7 +236,8 @@
   }
 
   function switchModal(fromType, toType) {
-    closeModalElement(document.getElementById(fromType + 'Modal'));
+    const fromModal = document.getElementById(fromType + 'Modal');
+    if (fromModal) closeModalElement(fromModal);
     openModal(toType);
   }
 
@@ -224,40 +263,63 @@
   }
 
   // ===== LOGIN HANDLING =====
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
 
-    const email = document.getElementById('loginEmail');
-    const password = document.getElementById('loginPassword');
+    const emailEl = document.getElementById('loginEmail');
+    const passwordEl = document.getElementById('loginPassword');
 
-    if (!email || !password) return;
+    if (!emailEl || !passwordEl) return;
 
-    const emailValue = email.value.trim();
-    const passwordValue = password.value.trim();
+    const email = emailEl.value.trim();
+    const password = passwordEl.value.trim();
 
-    if (!emailValue || !passwordValue) {
+    if (!email || !password) {
       showAlert('Please fill in all fields');
       return;
     }
 
     // Validate email format
-    if (!isValidEmail(emailValue)) {
+    if (!isValidEmail(email)) {
       showAlert('Please enter a valid email address');
       return;
     }
 
-    // TODO: Send login request to server
-    showAlert('Login successful! Redirecting to dashboard...', 'success');
-    
-    // Reset form
-    loginForm.reset();
-    closeModalElement(loginModal);
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        showAlert(data.message || 'Login failed');
+        return;
+      }
+
+      if (data.success) {
+        showAlert('Login successful', 'success');
+        // Redirect or update UI as needed
+
+        // Reset + close only on success
+        loginForm?.reset();
+        if (loginModal) closeModalElement(loginModal);
+        return;
+      }
+
+      showAlert(data.message || 'Login failed');
+    } catch (error) {
+      console.error('Error during login:', error);
+      showAlert('An error occurred. Please try again.');
+    }
   }
 
   // ===== REGISTRATION STEPS =====
   function showStep(step) {
     // Hide all forms
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
       const form = document.getElementById('step' + i + 'Form');
       if (form) {
         form.style.display = i === step ? 'block' : 'none';
@@ -265,12 +327,12 @@
     }
 
     // Update step indicators
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
       const stepEl = document.getElementById('step' + i);
       if (!stepEl) continue;
 
       stepEl.classList.remove('active', 'completed');
-      
+
       if (i < step) {
         stepEl.classList.add('completed');
       } else if (i === step) {
@@ -292,7 +354,7 @@
     // Smooth scroll to active step on mobile
     scrollToActiveStep(step);
 
-    if (step === 4) {
+    if (step === TOTAL_STEPS) {
       fillReview();
     }
   }

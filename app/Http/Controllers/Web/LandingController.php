@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class LandingController extends Controller
@@ -20,9 +23,19 @@ class LandingController extends Controller
         return view('index', compact('countries'));
     }
 
-//  Add login and registration handling if needed, or keep it as is since Laravel Breeze handles it separately
-    public function login(): View
+    public function login(LoginRequest $request): RedirectResponse
     {
-        return view('auth.login');
+        $credentials = $request->validated();
+
+        if (! Auth::attempt($credentials)) {
+            return redirect()
+                ->route('home')
+                ->withErrors(['email' => 'Invalid email or password.'])
+                ->withInput();
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard');
     }
 }

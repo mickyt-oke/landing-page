@@ -181,6 +181,7 @@ $rejectionReasons = [
                             <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
                             <div style="border-top: 1px solid var(--gray-light); margin: 0.5rem 0;"></div>
                             <form action="/logout" method="POST" style="display:inline;">
+                                @csrf
                                 <button type="submit" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                             </form>
                         </div>

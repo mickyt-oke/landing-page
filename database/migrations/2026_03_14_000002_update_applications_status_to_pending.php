@@ -16,23 +16,20 @@ return new class extends Migration
             ->where('status', 'submitted')
             ->update(['status' => 'pending']);
 
-        Schema::table('applications', function (Blueprint $table): void {
-            $table->dropIndex(['status']);
-            $table->dropIndex(['user_id', 'status']);
-            $table->dropIndex(['created_at', 'status']);
-        });
+        // Keep migrations portable across DB drivers (tests use sqlite in-memory).
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("DROP INDEX IF EXISTS applications_status_index ON applications");
+            DB::statement("DROP INDEX IF EXISTS applications_created_at_status_index ON applications");
 
-        DB::statement("
-            ALTER TABLE applications
-            MODIFY status ENUM('pending', 'under_review', 'approved', 'rejected')
-            NOT NULL DEFAULT 'pending'
-        ");
+            DB::statement("
+                ALTER TABLE applications
+                MODIFY status ENUM('pending', 'under_review', 'approved', 'rejected')
+                NOT NULL DEFAULT 'pending'
+            ");
+        }
 
-        Schema::table('applications', function (Blueprint $table): void {
-            $table->index('status');
-            $table->index(['user_id', 'status']);
-            $table->index(['created_at', 'status']);
-        });
+        // Indexes already exist from the original create table migration; don't recreate them.
+        // (Avoids sqlite "index ... already exists" during tests.)
     }
 
     /**
@@ -44,22 +41,21 @@ return new class extends Migration
             ->where('status', 'pending')
             ->update(['status' => 'submitted']);
 
-        Schema::table('applications', function (Blueprint $table): void {
-            $table->dropIndex(['status']);
-            $table->dropIndex(['user_id', 'status']);
-            $table->dropIndex(['created_at', 'status']);
-        });
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("DROP INDEX IF EXISTS applications_status_index ON applications");
+            DB::statement("DROP INDEX IF EXISTS applications_created_at_status_index ON applications");
 
-        DB::statement("
-            ALTER TABLE applications
-            MODIFY status ENUM('submitted', 'under_review', 'approved', 'rejected')
-            NOT NULL DEFAULT 'submitted'
-        ");
+            DB::statement("
+                ALTER TABLE applications
+                MODIFY status ENUM('submitted', 'under_review', 'approved', 'rejected')
+                NOT NULL DEFAULT 'submitted'
+            ");
+        }
 
-        Schema::table('applications', function (Blueprint $table): void {
-            $table->index('status');
-            $table->index(['user_id', 'status']);
-            $table->index(['created_at', 'status']);
+        Schema::table('applications', function (Blueprint $table) {
+            $table->dropIndex('applications_status_index');
+            $table->dropIndex('applications_user_id_status_index');
+            $table->dropIndex('applications_created_at_status_index');
         });
     }
 };

@@ -13,6 +13,7 @@ class RoleWorkflowTest extends TestCase
 
     public function test_user_cannot_access_admin_dashboard(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $user */
         $user = User::factory()->create(['role' => User::ROLE_USER]);
 
         $this->actingAs($user)
@@ -22,6 +23,7 @@ class RoleWorkflowTest extends TestCase
 
     public function test_reviewer_can_access_admin_dashboard(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $reviewer */
         $reviewer = User::factory()->create(['role' => User::ROLE_REVIEWER]);
 
         $this->actingAs($reviewer)
@@ -31,7 +33,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_reviewer_can_start_review_for_submitted_application(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $reviewer */
         $reviewer = User::factory()->create(['role' => User::ROLE_REVIEWER]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $owner */
         $owner = User::factory()->create(['role' => User::ROLE_USER]);
 
         $application = Application::query()->create([
@@ -43,7 +47,7 @@ class RoleWorkflowTest extends TestCase
             'visa_category' => 'Tourist',
             'arrival_date' => now()->subDays(10)->toDateString(),
             'overstay_days' => 10,
-            'status' => Application::STATUS_SUBMITTED,
+            'status' => Application::STATUS_PENDING,
         ]);
 
         $this->actingAs($reviewer)
@@ -58,7 +62,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_reviewer_cannot_approve_application(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $reviewer */
         $reviewer = User::factory()->create(['role' => User::ROLE_REVIEWER]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $owner */
         $owner = User::factory()->create(['role' => User::ROLE_USER]);
 
         $application = Application::query()->create([
@@ -82,7 +88,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_admin_can_approve_under_review_application(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $owner */
         $owner = User::factory()->create(['role' => User::ROLE_USER]);
 
         $application = Application::query()->create([
@@ -112,7 +120,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_admin_cannot_approve_submitted_application_due_to_transition_rule(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $owner */
         $owner = User::factory()->create(['role' => User::ROLE_USER]);
 
         $application = Application::query()->create([
@@ -124,7 +134,7 @@ class RoleWorkflowTest extends TestCase
             'visa_category' => 'Work',
             'arrival_date' => now()->subDays(3)->toDateString(),
             'overstay_days' => 3,
-            'status' => Application::STATUS_SUBMITTED,
+            'status' => Application::STATUS_PENDING,
         ]);
 
         $this->actingAs($admin)
@@ -136,7 +146,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_superadmin_can_manage_users_page_but_admin_cannot(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $superadmin */
         $superadmin = User::factory()->create(['role' => User::ROLE_SUPERADMIN]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->actingAs($superadmin)
@@ -150,7 +162,9 @@ class RoleWorkflowTest extends TestCase
 
     public function test_superadmin_can_update_user_role(): void
     {
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $superadmin */
         $superadmin = User::factory()->create(['role' => User::ROLE_SUPERADMIN]);
+        /** @var \App\Models\User&\Illuminate\Contracts\Auth\Authenticatable $target */
         $target = User::factory()->create(['role' => User::ROLE_USER]);
 
         $this->actingAs($superadmin)

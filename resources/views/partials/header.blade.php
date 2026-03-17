@@ -68,11 +68,6 @@
                         <i class="fas fa-plus-circle"></i>
                         <span>New Application</span>
                     </a>
-                    
-                    <a href="{{ route('dashboard') }}#applications" class="nav-item">
-                        <i class="fas fa-file-alt"></i>
-                        <span>My Applications</span>
-                    </a>
                 </div>
 
                 <!-- <div class="nav-section">
@@ -109,18 +104,18 @@
                 </div>
             </nav>
 
-            <!-- Sidebar Footer
+            <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="user-avatar">
-                        <?php echo $currentUser['initials']; ?>
+                        {{ strtoupper(substr(optional(auth()->user())->name ?? 'U', 0, 1)) }}
                     </div>
                     <div class="user-info">
-                        <div class="user-name"><?php echo $currentUser['name']; ?></div>
-                        <div class="user-role"><?php echo $currentUser['role']; ?></div>
+                        <div class="user-name">{{ optional(auth()->user())->name ?? 'User' }}</div>
+                        <div class="user-role">{{ optional(auth()->user())->role ?? '' }}</div>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </aside>
 
 <!-- MAIN CONTENT -->
@@ -151,7 +146,7 @@
                     <div class="dropdown" style="position: relative;">
                         <button class="header-btn" title="Account" style="width: auto; padding: 0 1rem; gap: 0.5rem;">
                             <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
-                            <span style="font-weight: 600;">{{ auth()->user()->name }}</span>
+                            <span style="font-weight: 600;">{{ optional(auth()->user())->name }}</span>
                             <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
                         </button>
                         

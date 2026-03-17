@@ -46,6 +46,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged in successfully.',
             'user' => Auth::guard('api')->user(),
+            'role' => Auth::guard('api')->user()->role,
+            'route' => $this->getRedirectRoute(Auth::guard('api')->user()->role),
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
@@ -75,5 +77,23 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
         ]);
+    }
+
+    /**
+     * Get the redirect route based on user role.
+     *
+     * @param string $role
+     * @return string
+     */
+    protected function getRedirectRoute($role)
+    {
+        switch ($role) {
+            case User::ROLE_ADMIN:
+                return '/admin/dashboard';
+            case User::ROLE_USER:
+                return '/dashboard';
+            default:
+                return '/dashboard';
+        }
     }
 }

@@ -13,11 +13,13 @@ class EnsureUserHasRole
      *
      * @param  array<int, string>  ...$roles
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
+        // Default null role to 'user' for backward compatibility
+        $userRole = $user?->role ?? 'user';
 
-        if (! $user || ! $user->hasAnyRole($roles)) {
+        if (! $user || ! in_array($userRole, $roles, true)) {
             abort(403, 'Unauthorized action.');
         }
 

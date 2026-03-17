@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -28,8 +29,7 @@ class LandingController extends Controller
         $credentials = $request->validated();
 
         if (! Auth::attempt($credentials)) {
-            return redirect()
-                ->route('home')
+            return redirect('/')
                 ->withErrors(['email' => 'Invalid email or password.'])
                 ->withInput();
         }
@@ -37,5 +37,15 @@ class LandingController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('dashboard');
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

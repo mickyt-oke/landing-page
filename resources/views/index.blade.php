@@ -77,8 +77,7 @@
   </div>
   <div class="overlay" id="overlay"></div>
 
-  <!-- LOGIN MODAL -->
-  <div class="modal" id="loginModal">
+  @include('partials.modals.login')
     <div class="modal-container">
       <button class="close-modal" aria-label="Close login modal">
         <i class="fas fa-times"></i>
@@ -104,7 +103,7 @@
       @endif
 
       <div class="modal-body">
-        <form id="dashboard" method="POST">
+        <form method="POST" action="{{ route('login.post') }}" enctype="multipart/form-data">
               @csrf
           <div class="form-group">
             <label for="loginEmail">Email Address</label>
@@ -135,10 +134,7 @@
         </form>
       </div>
     </div>
-  </div>
-
-  <!-- REGISTER MODAL -->
-  <div class="modal" id="registerModal">
+  @include('partials.modals.register')
     <div class="modal-container">
       <button class="close-modal" aria-label="Close registration modal">
         <i class="fas fa-times"></i>
@@ -154,7 +150,8 @@
 
       <div class="modal-body mb-0 mx-0">
         <div class="container" style="display: block;">
-          <form id="register" method="POST" enctype="multipart/form-data">
+action="{{ route('register') }}" method="POST" enctype="multipart/form-data"
+
             @csrf
             <div class="form-group">
               <label for="Surname">Surname</label>
@@ -218,38 +215,45 @@
               <label for="Password1">Password</label>
               <div class="input-wrapper">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="Password1" name="password1" placeholder="Create password" required>
-                <button type="button" class="password-toggle-btn" data-input="Password1" aria-label="Toggle password visibility">
+              <input type="password" id="regPassword1" name="password" placeholder="Create password" required>
+                <button type="button" class="password-toggle-btn" data-input="regPassword1" aria-label="Toggle password visibility">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
             </div>
 
             <div class="form-group">
-              <label for="Password2">Confirm Password</label>
+              <label for="regPassword2">Confirm Password</label>
               <div class="input-wrapper">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="Password2" name="password_confirmation" placeholder="Confirm password" required>
+                <input type="password" id="regPassword2" name="password_confirmation" placeholder="Confirm password" required>
                 <button type="button" class="password-toggle-btn" data-input="regPassword2" aria-label="Toggle password visibility">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
             </div>
-          </div>
-          <div style="display: flex; gap: 1rem;">
-            <button type="submit" class="modal-btn">Submit</button>
-          </div>
-           <div class="modal-footer">
-            Already have an account? <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
-          </div>
-        </form>
+
+            @if (session('error'))
+              <div class="alert alert-error">
+                {{ session('error') }}
+              </div>
+            @endif
+            @if (session('success'))
+              <div class="alert alert-success">
+                {{ session('success') }}
+              </div>
+            @endif
+
+            <button type="submit" class="modal-btn w-full">Submit</button>
+            
+            <div class="modal-footer">
+              Already have an account? <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- ELIGIBILITY MODAL -->
-  <div class="modal" id="eligibilityModal">
+  @include('partials.modals.eligibility')
     <div class="modal-container">
       <button class="close-modal" aria-label="Close eligibility modal">
         <i class="fas fa-times"></i>
@@ -284,10 +288,7 @@
         </ul>
       </div>
     </div>
-  </div>
-
-  <!-- CHECK STATUS MODAL with passport number or reference number generated after application submission -->
-  <div class="modal" id="checkStatusModal">
+  @include('partials.modals.status')
     <div class="modal-container">
       <button class="close-modal" aria-label="Close check status modal">
         <i class="fas fa-times"></i>
@@ -330,8 +331,8 @@
           <h1>Registration of Foreign Nationals</h1>
           <p>Affected by the Middle-East Crisis</p>
           <div class="hero-buttons">
-            <a href="#" class="btn btn-outline modal-trigger" data-modal="login">
-              <i class="fa-user fa-solid"></i> Apply Now
+<a href="#" class="btn btn-outline modal-trigger" data-modal="login">
+              <i class="fas fa-user"></i> Apply Now
             </a>
             <a href="#" data-modal="checkStatusModal" class="btn btn-outline modal-trigger">
               <i class="fas fa-search"></i> Check Status

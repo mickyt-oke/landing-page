@@ -8,12 +8,24 @@ use App\Http\Controllers\Web\LandingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
-Route::post('/login', [LandingController::class, 'login'])->name('login');
+
+/**
+ * Auth (web)
+ * - GET  /login: show login page (or redirect to home if login is a modal/section)
+ * - POST /login: perform login
+ */
+Route::get('/login', [LandingController::class, 'index'])->name('login');
+Route::post('/login', [LandingController::class, 'login'])->name('login.post');
+
+Route::post('/register', [LandingController::class, 'register'])->name('register');
+Route::post('/logout', [LandingController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+
     Route::middleware(['role:user,reviewer,admin,superadmin'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/create-new', [ApplicationController::class, 'create'])->name('create');
         Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
         Route::get('/applications/{application}', [DashboardController::class, 'show'])->name('applications.show');

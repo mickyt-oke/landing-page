@@ -23,8 +23,8 @@ return new class extends Migration
             $table->date('arrival_date');
             $table->unsignedInteger('overstay_days')->default(0);
 
-            $table->enum('status', ['submitted', 'under_review', 'approved', 'rejected'])
-                ->default('submitted')
+            $table->enum('status', ['pending', 'under_review', 'approved', 'rejected'])
+                ->default('pending')
                 ->index();
 
             $table->text('applicant_note')->nullable();

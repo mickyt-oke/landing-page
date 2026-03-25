@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->throttleApi();
+        // Use explicit limiter (name + rate) so we don't depend on a missing RateLimiter "api" definition.
+        // This prevents 500 errors like: "Rate limiter [api] is not defined."
+        $middleware->throttleApi('60,1');
 
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,

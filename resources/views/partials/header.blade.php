@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Foreigners Registration</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="author" content="Nigeria Immigration Service">
-
-    <title>User Dashboard | Foreigners Registration</title>
     <meta name="description" content="User dashboard for managing overstay clearance applications with Nigeria Immigration Service">
     
     <!-- Google Fonts -->
@@ -15,15 +14,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVJkEZSU3VwWiPqxigMAfjzD0/QW4K/ftSSLoDHtar4UlS3I1o2XQWARzbs86a1VQcREyXa40" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css" integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     
-    <!-- Favicon -->
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+     <!-- Favicon -->
+  <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
+  <!-- apple-touch-icon -->
+  <link rel="apple-touch-icon" href="{{ asset('assets/images/nis.png') }}">
+
+
+    <!-- Open Graph Meta Tags for social media sharing -->
+  <meta property="og:title" content="Migrants Overstay Portal | Nigeria Immigration Service">
+  <meta property="og:description" content="Apply now to avoid overstay penalties with the Nigeria Immigration Service. Submit your documents, avoid penalties, and stay compliant with immigration regulations. Fast, secure, and transparent application process.">
+  <meta property="og:image" content="{{ asset('assets/images/nis.png') }}">
+  <meta property="og:url" content="https://immigration.gov.ng">
 </head>
 <body class="dashboard-body">
     <div class="dashboard-container">
@@ -64,7 +72,7 @@
                         <span>Dashboard</span>
                     </a>
                     
-                    <a href="{{ route('web.applications.create') }}" class="nav-item">
+                    <a href="{{ route('applications.create') }}" class="nav-item">
                         <i class="fas fa-plus-circle"></i>
                         <span>New Application</span>
                     </a>
@@ -141,8 +149,7 @@
                     
                     <button class="header-btn" title="Messages">
                         <i class="fas fa-envelope"></i>
-                    </button>
-                    
+                    </button>                    
                     <div class="dropdown" style="position: relative;">
                         <button class="header-btn" title="Account" style="width: auto; padding: 0 1rem; gap: 0.5rem;">
                             <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
@@ -152,7 +159,6 @@
                         
                         <div class="dropdown-content" style="right: 0; top: 100%; margin-top: 0.5rem;">
                             <a href="#profile"><i class="fas fa-user"></i> My Profile</a>
-                            <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
                             <div style="border-top: 1px solid var(--gray-light); margin: 0.5rem 0;"></div>
                             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                 @csrf

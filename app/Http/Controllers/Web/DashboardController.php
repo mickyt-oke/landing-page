@@ -14,6 +14,7 @@ class DashboardController extends Controller
 
     public function __construct(private readonly Guard $auth)
     {
+        // auth middleware is applied in routes/web.php to protect the entire dashboard area
     }
 
     public function index(): View
@@ -35,10 +36,14 @@ class DashboardController extends Controller
 
         $currentUser = $this->auth->user();
 
+        $latestApplication = $applications->first();
+        
         return view('dashboard', [
             'applications' => $applications,
             'stats' => $stats,
             'currentUser' => $currentUser,
+            'latestAckRef' => $latestApplication?->ack_ref_number,
+            'latestApplication' => $latestApplication,
         ]);
     }
 

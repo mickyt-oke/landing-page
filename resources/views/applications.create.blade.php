@@ -3,13 +3,7 @@
  * User Dashboard - Migrants Overstay Portal
  * Nigeria Immigration Service
  */
-session_start();
 
-// Check if user is logged in (placeholder for actual auth)
-// if (!isset($_SESSION['user_id'])) {
-//     header('Location: index.php');
-//     exit;
-// }
 
 // Load nationalities from JSON
 $nationalities = json_decode(file_get_contents('assets/data/nationalities.json'), true);
@@ -77,9 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // TODO: persist data to database and move uploaded files safely
-        // e.g. move_uploaded_file($_FILES['passportDataFile']['tmp_name'], $destination);
-        $successMessage = 'Application submitted successfully. You will receive a confirmation email shortly.';
+        $ackRef = sprintf("%010d", mt_rand(1000000000, 9999999999));
+        $submittedDate = date('d M Y g:i A');
+        $applicantName = trim(($old['regSurname'] ?? '') . ' ' . ($old['regFirstName'] ?? '') . ' ' . ($old['regOtherNames'] ?? ''));
+        $passportNo = $old['regPassport'] ?? '';
+        $nationality = $old['regNationality'] ?? '';
+        $visaCategory = $old['visaCategory'] ?? ($old['svvSubCat'] ?? ($old['trvSubCat'] ?? ''));
+        $arrivalDate = $old['arrivalDate'] ?? '';
+        // TODO: persist data to database with $ackRef, move uploaded files
+        // $pdo->prepare("INSERT INTO applications ...");
+        // move_uploaded_file($_FILES['passportDataFile']['tmp_name'], $uploadPath);
+        $successMessage = ''; // Override for full ack page
     }
 }
 
@@ -135,9 +137,75 @@ $recentApplications = [
             <?php endforeach; ?>
         </ul>
     </div>
-<?php elseif (!empty($successMessage)): ?>
-    <div class="form-messages success" role="status">
-        <?php echo htmlspecialchars($successMessage); ?>
+<?php elseif (isset($ackRef)): ?>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .ack-section { max-width: 8.5in; margin: 0 auto; padding: 1rem; font-size: 12pt; }
+            body, html { margin: 0; padding: 0; }
+        }
+        .nis-header { background: linear-gradient(135deg, #003087, #0056b3); color: white; padding: 2rem 1rem; text-align: center; }
+        .ref-badge { background: #28a745; color: white; padding: 1rem 2rem; border-radius: 30px; font-weight: bold; font-size: 1.5em; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .ack-details { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 1rem 0; }
+        .ack-details table td:first-child { font-weight: bold; width: 40%; padding-right: 1rem; }
+        .next-steps { background: linear-gradient(to right, #f8f9fa, #e9ecef); border-left: 5px solid #28a745; padding: 1.5rem; border-radius: 8px; }
+    </style>
+    <script>
+        window.onload = function() { if (window.matchMedia && window.matchMedia('(print)').matches) return; };
+        window.onafterprint = function() { location.reload(); };
+        document.querySelectorAll('[id^=step]').forEach(el => el.style.display = 'none');
+    </script>
+    <div class="ack-section p-4">
+        <div class="no-print text-center mb-4">
+            <button onclick="window.print()" style="background: #28a745; color: white; border: none; padding: 1rem 2.5rem; font-size: 1.2em; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(40,167,69,0.3);">
+                <i class="fas fa-print"></i> Print This Acknowledgement
+            </button>
+        </div>
+        <div class="nis-header mb-4">
+            <img src="assets/images/nis-logo.png" alt="NIS Logo" style="height: 80px; margin-bottom: 1rem;">
+            <h1 style="font-size: 2.2em; margin: 0;">Nigeria Immigration Service</h1>
+            <p style="font-size: 1.3em; opacity: 0.9;">Foreigners Registration &amp; Overstay Clearance Portal</p>
+        </div>
+        <div class="ack-details">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h1 style="color: #003087; font-size: 2.8em; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">APPLICATION ACKNOWLEDGEMENT</h1>
+                <div class="ref-badge mb-3" style="font-size: 1.6em; padding: 1.2rem 2.5rem;">REFERENCE NUMBER: <?php echo $ackRef; ?></div>
+                <p style="font-size: 1.4em; color: #333; margin: 0;">Submission Date: <strong><?php echo $submittedDate; ?></strong></p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 2.5rem;">
+                <div>
+                    <h3 style="color: #003087; border-bottom: 3px solid #003087; padding-bottom: 0.8rem; margin-bottom: 1.5rem;">Applicant Information</h3>
+                    <table class="ack-details">
+                        <tr style="padding: 0.5rem 0;"><td>Full Name:</td><td><?php echo htmlspecialchars($applicantName); ?></td></tr>
+                        <tr style="padding: 0.5rem 0;"><td>Passport Number:</td><td><?php echo htmlspecialchars($passportNo); ?></td></tr>
+                        <tr style="padding: 0.5rem 0;"><td>Nationality:</td><td><?php echo htmlspecialchars($nationality); ?></td></tr>
+                        <tr style="padding: 0.5rem 0;"><td>Visa Category:</td><td><?php echo htmlspecialchars($visaCategory); ?></td></tr>
+                    </table>
+                </div>
+                <div>
+                    <h3 style="color: #003087; border-bottom: 3px solid #003087; padding-bottom: 0.8rem; margin-bottom: 1.5rem;">Application Details</h3>
+                    <table class="ack-details">
+                        <tr style="padding: 0.5rem 0;"><td>Arrival Date:</td><td><?php echo htmlspecialchars($arrivalDate); ?></td></tr>
+                        <tr style="padding: 0.5rem 0;"><td>Current Status:</td><td style="color: #28a745; font-weight: bold; font-size: 1.1em;">Submitted - Pending Review</td></tr>
+                        <tr style="padding: 0.5rem 0;"><td>Application Type:</td><td>Overstay Clearance Certificate</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="next-steps">
+                <h4 style="margin-top: 0; color: #28a745;">📋 Next Steps</h4>
+                <ul style="font-size: 1.1em; line-height: 1.7;">
+                    <li><strong>✅</strong> Your application has been successfully received and entered into our system.</li>
+                    <li><strong>🔍</strong> Login to your dashboard to track real-time status using this reference number.</li>
+                    <li><strong>⏱️</strong> Expected processing time: 5-10 working days.</li>
+                    <li><strong>📧</strong> Confirmation email sent (check spam if not received).</li>
+                    <li><strong>❓</strong> No update in 14 days? Contact support@nismigrantportal.gov.ng</li>
+                </ul>
+            </div>
+            <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px dashed #ddd; font-size: 1em; color: #666;">
+                <p><em>This is an official computer-generated acknowledgement. Keep this document for your records. No manual signature required.</em></p>
+                <p>Nigeria Immigration Service © {{ date('Y') }}</p>
+            </div>
+        </div>
     </div>
 <?php endif; ?>
 

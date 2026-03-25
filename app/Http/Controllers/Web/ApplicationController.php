@@ -29,8 +29,10 @@ class ApplicationController extends Controller
             $overstayDays = max(0, (int) $arrivalDate->diff($today)->format('%a'));
 
             $application = Application::query()->create([
-                'user_id' => (int) $request->user()->id,
+'user_id' => (int) $request->user()->id,
                 'application_reference' => $this->makeReference(),
+                'ack_ref_number' => $this->makeReference(),
+                'submitted_at' => now(),
                 'full_name' => $validated['full_name'],
                 'passport_number' => $validated['passport_number'],
                 'nationality' => $validated['nationality'],
@@ -50,13 +52,13 @@ class ApplicationController extends Controller
         });
 
         return redirect()
-            ->route('web.dashboard')
+            ->route('dashboard')
             ->with('status', 'Application submitted successfully. Ref: '.$application->application_reference);
     }
 
-    private function makeReference(): string
+private function makeReference(): string
     {
-        return 'APP-'.now()->format('Ymd').'-'.Str::upper(Str::random(6));
+        return (string) rand(1000000000, 9999999999);
     }
 
     private function storeDocument(StoreApplicationRequest $request, Application $application, string $field): void

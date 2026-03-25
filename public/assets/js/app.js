@@ -286,7 +286,7 @@
     }
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -295,17 +295,23 @@
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        showAlert(data.message || 'Login failed');
+        showAlert(data.message || data.error || 'Login failed');
         return;
       }
 
-      if (data.success) {
-        showAlert('Login successful', 'success');
-        // Redirect or update UI as needed
+      if (data.access_token) {
+        localStorage.setItem('access_token', data.access_token);
+        showAlert(data.message || 'Login successful', 'success');
 
-        // Reset + close only on success
         loginForm?.reset();
         if (loginModal) closeModalElement(loginModal);
+
+        if (data.route) {
+          window.location.href = data.route;
+          return;
+        }
+
+        window.location.href = '/dashboard';
         return;
       }
 

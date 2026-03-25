@@ -20,8 +20,10 @@ class Application extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
+'user_id',
         'application_reference',
+        'ack_ref_number',
+        'submitted_at',
         'full_name',
         'passport_number',
         'nationality',
@@ -42,7 +44,8 @@ class Application extends Model
     protected function casts(): array
     {
         return [
-            'arrival_date' => 'date',
+'arrival_date' => 'date',
+            'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',
             'overstay_days' => 'integer',
         ];

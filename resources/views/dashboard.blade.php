@@ -94,11 +94,11 @@
     <div class="welcome-section">
         <div class="welcome-content">
             <h2>Welcome back, {{ $firstName }}!</h2>
-            <p>Manage your application and track status.</p>
+            <p>Manage your application and track status</p>
         </div>
 
         <div class="welcome-action">
-            <a href="{{ route('create') }}" class="btn btn-primary">
+            <a href="{{ route('applications.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
                 New Application
             </a>
@@ -130,7 +130,7 @@
                     Filter
                 </button>
 
-                <a class="btn btn-primary btn-sm" href="{{ route('create') }}">
+                <a class="btn btn-primary btn-sm" href="{{ route('applications.create') }}">
                     <i class="fas fa-plus"></i>
                     New
                 </a>
@@ -158,7 +158,8 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Application ID</th>
+                            <th>App ID</th>
+                            <th>Ack Ref</th>
                             <th>Type</th>
                             <th>Submitted Date</th>
                             <th>Status</th>
@@ -172,6 +173,7 @@
                                 <td>
                                     <div class="font-semibold text-dark">{{ $app->id }}</div>
                                 </td>
+                                <td class="font-mono">{{ $app->ack_ref_number ?: '-' }}</td>
                                 <td>{{ $app->visa_category }}</td>
                                 <td>{{ optional($app->created_at)->format('M d, Y') }}</td>
                                 <td>
@@ -189,6 +191,22 @@
                                             type="button"
                                         >
                                             <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button
+                                            class="action-btn ack-preview"
+                                            data-app-id="{{ $app->id }}"
+                                            data-ack-ref="{{ $app->ack_ref_number }}"
+                                            data-submitted="{{ $app->submitted_at?->format('d M Y H:i') ?? '' }}"
+                                            data-name="{{ $app->full_name }}"
+                                            data-passport="{{ $app->passport_number }}"
+                                            data-nationality="{{ $app->nationality }}"
+                                            data-visa="{{ $app->visa_category }}"
+                                            data-arrival="{{ $app->arrival_date?->format('d M Y') }}"
+                                            data-status="{{ $app->status }}"
+                                            title="View Acknowledgement"
+                                            type="button"
+                                        >
+                                            <i class="fas fa-receipt"></i>
                                         </button>
 
                                         @if ($app->status === 'pending')
@@ -208,29 +226,6 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Help & Resources -->
-    <div class="content-card">
-        <div class="card-header">
-            <h3 class="card-title">Help & Resources</h3>
-        </div>
-
-        <div class="card-body">
-            <div class="resource-grid">
-                @foreach ($resourceCards as $resource)
-                    <div class="resource-card">
-                        <i class="fas {{ $resource['icon'] }} resource-icon" style="color: {{ $resource['colorVar'] }}"></i>
-                        <h4 class="resource-title">{{ $resource['title'] }}</h4>
-                        <p class="resource-desc">{{ $resource['description'] }}</p>
-
-                        <a class="resource-link" href="{{ $resource['href'] }}" style="color: {{ $resource['linkColorVar'] }}; font-weight: 600;">
-                            {{ $resource['linkText'] }} <i class="fas {{ $resource['linkIcon'] }}"></i>
-                        </a>
-                    </div>
-                @endforeach
             </div>
         </div>
     </div>
@@ -365,7 +360,89 @@
                     </div>
                 </div>
             </div>
+    </div>
+    </div>
+
+    <!-- Acknowledgement Preview Modal -->
+    <div class="modal-overlay" id="ackModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Application Acknowledgement</h3>
+                <button class="modal-close" onclick="closeAckModal()" type="button" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="ackContent">
+                <!-- Content loaded dynamically -->
+            </div>
         </div>
     </div>
+
+    <script>
+    function closeAckModal() {
+        document.getElementById('ackModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ack preview
+        document.querySelectorAll('.ack-preview').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const data = this.dataset;
+                const content = generateAckContent(data);
+                document.getElementById('ackContent').innerHTML = content;
+                document.getElementById('ackModal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        // Close modal on overlay click
+        document.getElementById('ackModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAckModal();
+        });
+    });
+
+    function generateAckContent(data) {
+        const statusClass = data.status === 'approved' ? 'success' : data.status === 'rejected' ? 'danger' : 'warning';
+        return `
+            <style>
+                @media print { .no-print { display: none !important; } }
+                .nis-header { background: linear-gradient(135deg, #003087, #0056b3); color: white; padding: 1rem; text-align: center; border-radius: 8px 8px 0 0; }
+                .ref-badge { background: #28a745; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; font-weight: bold; font-size: 1.3em; display: inline-block; }
+                .ack-details td:first-child { font-weight: bold; width: 40%; }
+            </style>
+            <div class="no-print text-center mb-3">
+                <button onclick="window.print()" class="btn btn-success">Print Acknowledgement</button>
+            </div>
+            <div class="nis-header">
+                <h2>Nigeria Immigration Service</h2>
+                <p>Migrant Overstay Clearance Portal</p>
+            </div>
+            <div style="padding: 2rem; border: 1px solid #ddd; background: #fafafa;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h1 style="color: #003087;">APPLICATION ACKNOWLEDGEMENT</h1>
+                    <div class="ref-badge">Ref: \${data.ackRef || 'N/A'}</div>
+                    <p>Date: \${data.submitted || 'N/A'}</p>
+                </div>
+                <table style="width: 100%; margin-bottom: 1rem;">
+                    <tr><td><strong>Full Name:</strong></td><td>\${data.name}</td></tr>
+                    <tr><td><strong>Passport:</strong></td><td>\${data.passport}</td></tr>
+                    <tr><td><strong>Nationality:</strong></td><td>\${data.nationality}</td></tr>
+                    <tr><td><strong>Visa:</strong></td><td>\${data.visa}</td></tr>
+                    <tr><td><strong>Arrival:</strong></td><td>\${data.arrival}</td></tr>
+                    <tr><td><strong>Status:</strong></td><td><span class="badge bg-\${statusClass}">\${data.status?.toUpperCase()}</span></td></tr>
+                </table>
+                <div style="padding: 1rem; background: white; border-left: 4px solid #003087;">
+                    <h5>Next Steps</h5>
+                    <ul>
+                        <li>Application received and \${data.status === 'approved' ? 'approved' : 'under review'}</li>
+                        <li>Track using reference number</li>
+                        <li>Processing: 5-10 days</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+    </script>
 
 @include('partials.footer')

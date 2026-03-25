@@ -11,8 +11,12 @@ use Illuminate\View\View;
 
 class LandingController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('dashboard');
+        }
+
         // load country list from public assets (could also be moved to config or database)
         $path = public_path('assets/data/countries.json');
         $countries = [];
@@ -24,24 +28,61 @@ class LandingController extends Controller
         return view('index', compact('countries'));
     }
 
+    public function faq(): View
+    {
+        $faqItems = [
+            [
+                'question' => 'Who is required to use this portal?',
+                'answer' => 'This portal is for foreign nationals affected by the Middle-East crisis who need to register their stay and remain compliant with Nigeria Immigration Service requirements.',
+            ],
+            [
+                'question' => 'How do I apply on the portal?',
+                'answer' => 'Click the Apply Now button on the landing page, sign in to your account, complete the required information, and submit the requested supporting documents for review.',
+            ],
+            [
+                'question' => 'Is this portal free to use?',
+                'answer' => 'Registration on the portal is provided as part of the support and documentation process. Follow any official guidance shown during your application if additional requirements are introduced.',
+            ],
+            [
+                'question' => 'What documents may be required during registration?',
+                'answer' => 'Applicants may be asked to provide valid travel identification, passport biodata information, evidence of entry or stay, and any other documents requested by the Nigeria Immigration Service.',
+            ],
+            [
+                'question' => 'Can I track the status of my application?',
+                'answer' => 'Yes. After submitting your application, use the Check Status option on the landing page or log in to your dashboard to monitor progress and review updates.',
+            ],
+            [
+                'question' => 'What happens after I submit my application?',
+                'answer' => 'Your submission will be reviewed by the appropriate officers. You may receive status updates, requests for clarification, or confirmation once the review process is completed.',
+            ],
+            [
+                'question' => 'What should I do if I need help?',
+                'answer' => 'If you need support, use the official contact channels provided by the Nigeria Immigration Service, including the support email and phone details shown on the website footer.',
+            ],
+        ];
+
+        return view('faq', compact('faqItems'));
+    }
+
     public function login(LoginRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
 
-        if (! Auth::attempt($credentials)) {
+        if (! Auth::guard('web')->attempt($credentials)) {
             return redirect('/')
                 ->withErrors(['email' => 'Invalid email or password.'])
                 ->withInput();
         }
 
         $request->session()->regenerate();
+        $request->session()->flash('success', 'Logged in successfully.');
 
-        return redirect()->route('dashboard');
+        return redirect()->intended(route('dashboard'));
     }
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

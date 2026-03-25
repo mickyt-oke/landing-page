@@ -49,14 +49,21 @@
         </div>
 
         <div class="nav-menu">
+          <a href="{{ route('faq') }}" class="faq-nav-link">FAQ</a>
           <div class="dropdown">
             <button class="dropdown-btn">
               Account
               <i class="fas fa-chevron-down"></i>
             </button>
             <div class="dropdown-content">
-              <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
-              <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+              @guest
+                <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+              @else
+                <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+              @endguest
             </div>
           </div>
         </div>
@@ -72,251 +79,33 @@
 
   <!-- MOBILE MENU -->
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
-    <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+    <a href="{{ route('faq') }}"><i class="fas fa-circle-question"></i> FAQ</a>
+    @guest
+      <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+      <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+    @else
+      <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
+      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    @endguest
   </div>
   <div class="overlay" id="overlay"></div>
 
   @include('partials.modals.login')
-    <div class="modal-container">
-      <button class="close-modal" aria-label="Close login modal">
-        <i class="fas fa-times"></i>
-      </button>
-      
-      <div class="modal-header">
-        <div class="modal-logo">
-          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
-        </div>
-        <h2>Welcome Back</h2>
-        <p>Login to your Account</p>
-      </div>
-      <!-- PHP error and success message handling -->
-      @if (session('error'))
-        <div class="alert alert-error">
-          {{ session('error') }}
-        </div>
-      @endif
-      @if (session('success'))
-        <div class="alert alert-success">
-          {{ session('success') }}
-        </div>
-      @endif
-
-      <div class="modal-body">
-        <form method="POST" action="{{ route('login.post') }}" enctype="multipart/form-data">
-              @csrf
-          <div class="form-group">
-            <label for="loginEmail">Email Address</label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope"></i>
-              <input type="email" id="loginEmail" name="email" placeholder="Enter your email" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="loginPassword">Password</label>
-            <div class="input-wrapper">
-              
-              <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
-              <button type="button" class="password-toggle-btn" data-input="loginPassword" aria-label="Toggle password visibility">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" class="modal-btn">
-            <i class="fas fa-sign-in-alt"></i> Login
-          </button>
-
-          <div class="modal-footer">
-            Don't have an account? <a href="#" class="modal-switch-trigger" data-from="login" data-to="register">Register here</a>
-          </div>
-        </form>
-      </div>
-    </div>
+   
   @include('partials.modals.register')
-    <div class="modal-container">
-      <button class="close-modal" aria-label="Close registration modal">
-        <i class="fas fa-times"></i>
-      </button>
-      
-      <div class="modal-header">
-        <div class="modal-logo">
-          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
-        </div>
-        <h4>Create New Account</h4>
-        <p></p>
-      </div>
 
-      <div class="modal-body mb-0 mx-0">
-        <div class="container" style="display: block;">
-action="{{ route('register') }}" method="POST" enctype="multipart/form-data"
-
-            @csrf
-            <div class="form-group">
-              <label for="Surname">Surname</label>
-              <div class="input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" name="sname" placeholder="Enter surname" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="FirstName">Given Names</label>
-              <div class="input-wrapper">
-                <i class="fas fa-user"></i>
-                <input type="text" name="fname" placeholder="Firstname Othernames" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="Passport">Passport Number</label>
-              <div class="input-wrapper">
-                <i class="fas fa-passport"></i>
-                <input type="text" name="pptno" placeholder="Enter passport number" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="PptType">Type of Passport</label>
-              <div class="input-wrapper">
-                <i class="fas fa-calendar"></i>
-                <select name="ppttype" required>
-                  <option value="" disabled selected>Select passport type</option>
-                  <option value="ordinary">Ordinary/Standard</option>
-                  <option value="diplomatic">Diplomatic</option>
-                  <option value="service">Service/Official</option>
-                  <option value="UN_Official">UN Laissez Passez</option>
-                </select>
-              </div>
-            <!-- nationality list passed from json file in controller -->
-             <div class="form-group">
-              <label for="Nationality">Nationality</label>
-              <div class="input-wrapper">
-                <i class="fas fa-globe"></i>
-                <select name="nationality" required>
-                  <option value="" disabled selected>Select Nationality</option>
-                  @foreach ($countries as $country)
-                    <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
-                  @endforeach
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="Email">Email Address</label>
-              <div class="input-wrapper">
-                <i class="fas fa-envelope"></i>
-                <input type="email" name="email" placeholder="Enter email" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="Password1">Password</label>
-              <div class="input-wrapper">
-                <i class="fas fa-lock"></i>
-              <input type="password" id="regPassword1" name="password" placeholder="Create password" required>
-                <button type="button" class="password-toggle-btn" data-input="regPassword1" aria-label="Toggle password visibility">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="regPassword2">Confirm Password</label>
-              <div class="input-wrapper">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="regPassword2" name="password_confirmation" placeholder="Confirm password" required>
-                <button type="button" class="password-toggle-btn" data-input="regPassword2" aria-label="Toggle password visibility">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </div>
-            </div>
-
-            @if (session('error'))
-              <div class="alert alert-error">
-                {{ session('error') }}
-              </div>
-            @endif
-            @if (session('success'))
-              <div class="alert alert-success">
-                {{ session('success') }}
-              </div>
-            @endif
-
-            <button type="submit" class="modal-btn w-full">Submit</button>
-            
-            <div class="modal-footer">
-              Already have an account? <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   @include('partials.modals.eligibility')
-    <div class="modal-container">
-      <button class="close-modal" aria-label="Close eligibility modal">
-        <i class="fas fa-times"></i>
-      </button>
-      
-      <div class="modal-header">
-        <div class="modal-logo">
-          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
-        </div>
-        <h2>Eligibility Criteria</h2>
-        <p>Ensure you meet the requirements before applying</p>
-      </div>
-
-      <div class="modal-body">
-        <ul class="eligibility-list">
-          <li>
-            <i class="fas fa-check"></i>
-            <span>Foreign nationals currently in Nigeria affected by the Middle-East crisis</span>
-          </li>
-          <li>
-            <i class="fas fa-check"></i>
-            <span>Must have valid travel documents (passport, visa)</span>
-          </li>
-          <li>
-            <i class="fas fa-check"></i>
-            <span>Must not have a history of immigration violations</span>
-          </li>
-          <li>
-            <i class="fas fa-check"></i>
-            <span>Must provide accurate and complete information</span>
-          </li>
-        </ul>
-      </div>
-    </div>
+    
   @include('partials.modals.status')
-    <div class="modal-container">
-      <button class="close-modal" aria-label="Close check status modal">
-        <i class="fas fa-times"></i>
-      </button>
 
-      <div class="modal-header">
-        <div class="modal-logo">
-          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
-        </div>
-        <h2>Check Application Status</h2>
-        <p>Enter your passport number or reference number to check the status of your application</p>
-      </div>
-
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="passportNumber">Passport Number</label>
-            <input type="text" id="passportNumber" class="form-control" placeholder="Enter your passport number">
-          </div>
-          <div class="form-group">
-            <label for="referenceNumber">Reference Number</label>
-            <input type="text" id="referenceNumber" class="form-control" placeholder="Enter your reference number">
-          </div>
-          <button type="submit" class="btn btn-primary">Check Status</button>
-        </form>
-      </div>
-    </div>
   </div>
+
+  @if(session('success'))
+    <div class="alert alert-success" role="alert" style="margin: 1rem; padding: .75rem 1rem; border: 1px solid #28a745; background:#e6ffed; color:#155724; border-radius:4px;">
+      {{ session('success') }}
+    </div>
+  @endif
 
   <main>
     <!-- HERO SECTION -->
@@ -504,13 +293,14 @@ action="{{ route('register') }}" method="POST" enctype="multipart/form-data"
           <ul>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Immigration Policies</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Visa Information</a></li>
+            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Support</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Support</h4>
           <ul>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
           </ul>

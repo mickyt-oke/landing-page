@@ -44,7 +44,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <img src="assets/images/nis-logo-white.png" alt="NIS Logo" onerror="this.src='assets/images/nis-logo.png'">
+                    <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" onerror="this.src='{{ asset('assets/images/nis-logo.png') }}'">
                 </div>
                 <div class="sidebar-title">
                     <h4>Registration Portal</h4>

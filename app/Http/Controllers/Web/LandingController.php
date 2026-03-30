@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -88,5 +89,25 @@ class LandingController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function register(RegisterRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        \App\Models\User::create([
+            'name' => trim($validated['sname'].' '.$validated['fname']),
+            'surname' => $validated['sname'],
+            'first_name' => $validated['fname'],
+            'other_names' => null,
+            'passport_number' => $validated['pptno'],
+            'passport_type' => $validated['ppttype'],
+            'nationality' => $validated['nationality'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'role' => \App\Models\User::ROLE_USER,
+        ]);
+
+        return redirect('/')
+            ->with('success', 'Registration successful. Please log in to continue.');
     }
 }

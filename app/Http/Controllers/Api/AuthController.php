@@ -18,7 +18,12 @@ class AuthController extends Controller
         $validated = $request->validated();
 
         $user = User::query()->create([
-            'name' => $validated['name'],
+            'name' => $validated['sname'].' '.$validated['fname'],
+            'surname' => $validated['sname'],
+            'first_name' => $validated['fname'],
+            'other_names' => null,
+            'passport_number' => $validated['pptno'],
+            'passport_type' => $validated['ppttype'],   
             'email' => $validated['email'],
             'password' => $validated['password'],
             'role' => User::ROLE_USER,
@@ -28,7 +33,18 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Registered successfully.',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'first_name' => $user->first_name,
+                'passport_number' => $user->passport_number,
+                'passport_type' => $user->passport_type,
+                'email' => $user->email,
+                'role' => $user->role,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,

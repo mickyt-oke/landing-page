@@ -5,87 +5,7 @@
     $currentUser = auth()->user();
     $firstName = filled($currentUser?->name) ? explode(' ', trim($currentUser->name))[0] : 'there';
 
-    $stats = $stats ?? [];
-    $applications = $applications ?? collect();
-    $totalApplications = (int) data_get($stats, 'total_applications', 0);
-    $pendingCount = (int) data_get($stats, 'pending', 0);
-    $approvedCount = (int) data_get($stats, 'approved', 0);
-    $rejectedCount = (int) data_get($stats, 'rejected', 0);
 
-    $statCards = [
-        [
-            'key' => 'totalApplications',
-            'cardClass' => '',
-            'iconClass' => 'primary',
-            'icon' => 'fa-file-alt',
-            'value' => $totalApplications,
-            'label' => 'Total Applications',
-        ],
-        [
-            'key' => 'pendingApplications',
-            'cardClass' => 'warning',
-            'iconClass' => 'warning',
-            'icon' => 'fa-clock',
-            'value' => $pendingCount,
-            'label' => 'Pending Review',
-        ],
-        [
-            'key' => 'approvedApplications',
-            'cardClass' => 'success',
-            'iconClass' => 'primary',
-            'icon' => 'fa-check-circle',
-            'value' => $approvedCount,
-            'label' => 'Approved',
-        ],
-        [
-            'key' => 'rejectedApplications',
-            'cardClass' => 'danger',
-            'iconClass' => 'danger',
-            'icon' => 'fa-times-circle',
-            'value' => $rejectedCount,
-            'label' => 'Rejected',
-        ],
-    ];
-
-    $filterTabs = [
-        ['filter' => 'all', 'label' => 'All', 'count' => $totalApplications, 'active' => true],
-        ['filter' => 'pending', 'label' => 'Pending', 'count' => $pendingCount, 'active' => false],
-        ['filter' => 'approved', 'label' => 'Approved', 'count' => $approvedCount, 'active' => false],
-        ['filter' => 'rejected', 'label' => 'Rejected', 'count' => $rejectedCount, 'active' => false],
-    ];
-
-    $resourceCards = [
-        [
-            'icon' => 'fa-book',
-            'colorVar' => 'var(--primary)',
-            'title' => 'Application Guide',
-            'description' => 'Learn how to apply for overstay clearance',
-            'linkText' => 'Read More',
-            'href' => '#',
-            'linkColorVar' => 'var(--primary)',
-            'linkIcon' => 'fa-arrow-right',
-        ],
-        [
-            'icon' => 'fa-file-pdf',
-            'colorVar' => 'var(--secondary)',
-            'title' => 'Required Documents',
-            'description' => 'Checklist of documents you need to prepare',
-            'linkText' => 'Download PDF',
-            'href' => '#',
-            'linkColorVar' => 'var(--secondary)',
-            'linkIcon' => 'fa-download',
-        ],
-        [
-            'icon' => 'fa-question-circle',
-            'colorVar' => 'var(--warning)',
-            'title' => 'FAQs',
-            'description' => 'Frequently asked questions about the process',
-            'linkText' => 'View FAQs',
-            'href' => '#',
-            'linkColorVar' => 'var(--warning)',
-            'linkIcon' => 'fa-arrow-right',
-        ],
-    ];
 @endphp
 
 <!-- Dashboard Content -->
@@ -106,7 +26,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="stats-grid">
+    {{-- <div class="stats-grid">
         @foreach ($statCards as $card)
             <div class="stat-card {{ $card['cardClass'] }}">
                 <div class="stat-icon {{ $card['iconClass'] }}">
@@ -117,12 +37,12 @@
                 <div class="stat-label">{{ $card['label'] }}</div>
             </div>
         @endforeach
-    </div>
+    </div> --}}
 
     <!-- Recent Applications -->
     <div class="content-card" id="applications">
         <div class="card-header">
-            <h3 class="card-title">My Applications</h3>
+            <h3 class="card-title">My Application</h3>
 
             <div class="card-actions">
                 <button class="btn btn-outline btn-sm" type="button" aria-label="Filter applications">
@@ -138,7 +58,7 @@
         </div>
 
         <div class="card-body">
-            <!-- Filter Tabs -->
+            {{-- <!-- Filter Tabs -->
             <div class="filter-tabs" role="tablist" aria-label="Application filters">
                 @foreach ($filterTabs as $tab)
                     <button
@@ -151,7 +71,7 @@
                         {{ $tab['label'] }} <span class="count">{{ $tab['count'] }}</span>
                     </button>
                 @endforeach
-            </div>
+            </div> --}}
 
             <!-- Applications Table -->
             <div class="table-container">
@@ -159,7 +79,7 @@
                     <thead>
                         <tr>
                             <th>App ID</th>
-                            <th>Ack Ref</th>
+                            <th>Ref ID</th>
                             <th>Type</th>
                             <th>Submitted Date</th>
                             <th>Status</th>
@@ -416,7 +336,7 @@
             </div>
             <div class="nis-header">
                 <h2>Nigeria Immigration Service</h2>
-                <p>Migrant Overstay Clearance Portal</p>
+                <p>Foreigners Registration Portal</p>
             </div>
             <div style="padding: 2rem; border: 1px solid #ddd; background: #fafafa;">
                 <div style="text-align: center; margin-bottom: 2rem;">

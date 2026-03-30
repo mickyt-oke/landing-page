@@ -86,45 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Placeholder user data - replace with actual database query
-$currentUser = [
-    'name' => 'John Doe',
-    'email' => 'john.doe@example.com',
-    'role' => 'Applicant',
-    'initials' => 'JD'
-];
-
 // Placeholder statistics - replace with actual database queries
-$stats = [
-    'total_applications' => 3,
-    'pending' => 1,
-    'approved' => 1,
-    'rejected' => 1
-];
-
 // Placeholder recent applications
-$recentApplications = [
-    [
-        'id' => 'APP001',
-        'type' => 'Overstay Clearance',
-        'submitted_date' => '2024-03-15',
-        'status' => 'pending',
-        'status_label' => 'Pending Review'
-    ],
-    [
-        'id' => 'APP002',
-        'type' => 'Overstay Clearance',
-        'submitted_date' => '2024-03-10',
-        'status' => 'approved',
-        'status_label' => 'Approved'
-    ],
-    [
-        'id' => 'APP003',
-        'type' => 'Overstay Clearance',
-        'submitted_date' => '2024-03-05',
-        'status' => 'rejected',
-        'status_label' => 'Rejected'
-    ]
-];
+
 ?>
 
 <?php include 'inc/header.php'; ?>
@@ -164,7 +128,7 @@ $recentApplications = [
         <div class="nis-header mb-4">
             <img src="assets/images/nis-logo.png" alt="NIS Logo" style="height: 80px; margin-bottom: 1rem;">
             <h1 style="font-size: 2.2em; margin: 0;">Nigeria Immigration Service</h1>
-            <p style="font-size: 1.3em; opacity: 0.9;">Foreigners Registration &amp; Overstay Clearance Portal</p>
+            <p style="font-size: 1.3em; opacity: 0.9;">Foreigners Registration Portal</p>
         </div>
         <div class="ack-details">
             <div style="text-align: center; margin-bottom: 2.5rem;">
@@ -255,7 +219,7 @@ $recentApplications = [
       </div>
 
       <div class="modal-body">
-        <form id="registrationForm" method="post" enctype="multipart/form-data" novalidate>
+        <form id="registrationForm" method="POST" action="{{ route('applications.store') }}" enctype="multipart/form-data">
         <!-- Step 1: Registration Form -->
         <div id="step1Form" style="display: block;">
             <div class="form-group">

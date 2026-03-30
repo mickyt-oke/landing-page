@@ -642,6 +642,108 @@
     }
   }
 
+  // INDEX PAGE REGISTER MODAL FOR USERS WHO CLICK REGISTER INSTEAD OF LOGIN
+  const registerTrigger = document.getElementById('registerTrigger');
+  if (registerTrigger) {
+    registerTrigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      switchModal('login', 'register');
+    });
+  }
+
+  // INDEX PAGE REGISTER FORM VALIDATION
+  const indexRegisterForm = document.getElementById('indexRegisterForm');
+  if (indexRegisterForm) {
+    indexRegisterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const emailEl = document.getElementById('indexRegEmail');
+      const passwordEl = document.getElementById('indexRegPassword');
+      const confirmEl = document.getElementById('indexRegConfirm');
+
+      if (!emailEl || !passwordEl || !confirmEl) return;
+
+      const email = emailEl.value.trim();
+      const password = passwordEl.value.trim();
+      const confirm = confirmEl.value.trim();
+
+      if (!email || !password || !confirm) {
+        showAlert('Please fill in all fields');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showAlert('Please enter a valid email address');
+        return;
+      }
+
+      if (password.length < 8) {
+        showAlert('Password must be at least 8 characters');
+        return;
+      }
+
+      if (password !== confirm) {
+        showAlert('Passwords do not match');
+        return;
+      }
+
+      // If validation passes, submit the form
+      indexRegisterForm.submit();
+    });
+  } 
+
+
+  // Check status modal trigger
+  const checkStatusBtn = document.getElementById('checkStatusBtn');
+  if (checkStatusBtn) {
+    checkStatusBtn.addEventListener('click', function() {
+      openModal('checkStatus');
+    });
+  }
+
+  // Check status form handling (using API for real-time status check without page reload)
+  const checkStatusForm = document.getElementById('checkStatusForm');
+  if (checkStatusForm) {
+    checkStatusForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const reference = document.getElementById('statusReference')?.value.trim();
+      if (!reference) {
+        showAlert('Please enter your application reference number');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/status/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ reference })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          showAlert(data.message || data.error || 'Failed to check status');
+          return;
+        }
+
+        if (data.status) {
+          // Display status in the modal
+          const resultEl = document.getElementById('statusResult');
+          if (resultEl) {
+            resultEl.textContent = 'Current Status: ' + data.status;
+            resultEl.style.display = 'block';
+          }
+        } else {
+          showAlert('Status not found for the provided reference number');
+        }
+      } catch (error) {
+        console.error('Error checking status:', error);
+        showAlert('An error occurred. Please try again.');
+      }
+    });
+  }   
+
   // Expose functions to window if needed for debugging
   window.AppPortal = {
     openModal,

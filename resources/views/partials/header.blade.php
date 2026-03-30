@@ -162,7 +162,7 @@
                             <div style="border-top: 1px solid var(--gray-light); margin: 0.5rem 0;"></div>
                             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn-link" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                <button type="submit" class="submit-btn" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                             </form>
                         </div>
                     </div>

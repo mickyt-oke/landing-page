@@ -26,6 +26,12 @@ Route::prefix('auth')->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
     });
 
+// status check api route (optional)
+    Route::post('status', function () {
+        return response()->json(['status' => 'ok']);
+    })->middleware('auth:api');
+    
+
 // other API routes (e.g. applications, admin actions) would go here, protected by auth:api middleware as needed
     Route::middleware('auth:api')->group(function () {
         // Example protected route

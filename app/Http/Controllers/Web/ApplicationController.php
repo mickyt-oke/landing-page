@@ -16,20 +16,39 @@ class ApplicationController extends Controller
 {
     public function create(): View
     {
-        return view('applications.create');
+        /** @var \App\Models\User $user */
+        $user = request()->user();
+
+        $nationalitiesPath = public_path('assets/data/nationalities.json');
+        $nationalities = [];
+
+        if (file_exists($nationalitiesPath)) {
+            $nationalities = json_decode(file_get_contents($nationalitiesPath), true) ?: [];
+        }
+
+        $prefill = [
+            'regSurname' => old('surname', $user->surname),
+            'regFirstName' => old('first_name', $user->first_name),
+            'regOtherNames' => old('other_names', $user->other_names),
+            'regPassport' => old('passport_number', $user->passport_number),
+            'regNationality' => old('nationality', $user->nationality),
+        ];
+
+        return view('applications.create', compact('nationalities', 'prefill'));
     }
 
     public function store(StoreApplicationRequest $request): RedirectResponse
     {
         $validated = $request->validated();
 
+        /** @var \App\Models\Application $application */
         $application = DB::transaction(function () use ($validated, $request) {
             $arrivalDate = new \DateTimeImmutable($validated['arrival_date']);
             $today = new \DateTimeImmutable('today');
             $overstayDays = max(0, (int) $arrivalDate->diff($today)->format('%a'));
 
             $application = Application::query()->create([
-'user_id' => (int) $request->user()->id,
+                'user_id' => (int) $request->user()->id,
                 'application_reference' => $this->makeReference(),
                 'ack_ref_number' => $this->makeReference(),
                 'submitted_at' => now(),
@@ -38,6 +57,9 @@ class ApplicationController extends Controller
                 'nationality' => $validated['nationality'],
                 'visa_category' => $validated['visa_category'],
                 'arrival_date' => $validated['arrival_date'],
+                'address' => $validated['address'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
                 'overstay_days' => $overstayDays,
                 'status' => Application::STATUS_PENDING,
                 'applicant_note' => $validated['applicant_note'] ?? null,
@@ -52,11 +74,29 @@ class ApplicationController extends Controller
         });
 
         return redirect()
-            ->route('dashboard')
-            ->with('status', 'Application submitted successfully. Ref: '.$application->application_reference);
+            ->route('applications.success', $application)
+            ->with('status', 'Application submitted successfully.');
     }
 
-private function makeReference(): string
+    public function show(Application $application): View
+    {
+        $this->authorizeApplicationAccess($application);
+
+        return view('applications.success', [
+            'application' => $application->loadMissing('documents'),
+        ]);
+    }
+
+    public function acknowledgement(Application $application): View
+    {
+        $this->authorizeApplicationAccess($application);
+
+        return view('applications.acknowledgement', [
+            'application' => $application->loadMissing('documents'),
+        ]);
+    }
+
+    private function makeReference(): string
     {
         return (string) rand(1000000000, 9999999999);
     }
@@ -64,6 +104,7 @@ private function makeReference(): string
     private function storeDocument(StoreApplicationRequest $request, Application $application, string $field): void
     {
         $file = $request->file($field);
+
         if (! $file) {
             return;
         }
@@ -81,6 +122,27 @@ private function makeReference(): string
             'mime_type' => (string) $file->getClientMimeType(),
             'size_bytes' => (int) $file->getSize(),
         ]);
+    }
+
+    private function authorizeApplicationAccess(Application $application): void
+    {
+        /** @var \App\Models\User|null $user */
+        $user = request()->user();
+
+        if (! $user instanceof \App\Models\User) {
+            abort(403);
+        }
+
+        $isOwner = (int) $application->user_id === (int) $user->id;
+        $isPrivileged = $user->hasAnyRole([
+            \App\Models\User::ROLE_REVIEWER,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_SUPERADMIN,
+        ]);
+
+        if (! $isOwner && ! $isPrivileged) {
+            abort(403);
+        }
     }
 
     public function download(ApplicationDocument $document)

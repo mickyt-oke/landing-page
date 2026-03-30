@@ -5,16 +5,13 @@
       </button>
       
       <div class="modal-header">
-        <div class="modal-logo">
-          <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/80x80?text=NIS'">
-        </div>
-        <h4>Create New Account</h4>
+        <h2>Create New Account</h2>
         <p></p>
       </div>
 
       <div class="modal-body mb-0 mx-0">
         <div class="container" style="display: block;">
-          <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+          <form action="{{ route('register') }}" method="POST" id="registerUserForm">
             @csrf
             <div class="form-group">
               <label for="Surname">Surname</label>
@@ -109,9 +106,9 @@
             @endif
 
             <button type="submit" class="modal-btn w-full">Submit</button>
-            
             <div class="modal-footer">
-              Already have an account? <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
+              Already have an account? 
+              <a href="#" class="modal-switch-trigger" data-from="register" data-to="login">Login here</a>
             </div>
           </form>
         </div>

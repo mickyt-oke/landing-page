@@ -44,7 +44,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <img src="assets/images/nis-logo-white.png" alt="NIS Logo" onerror="this.src='assets/images/nis-logo.png'">
+                    <img src="{{ asset('assets/images/nis-logo-white.png') }}" alt="NIS Logo" onerror="this.src='{{ asset('assets/images/nis-logo.png') }}'">
                 </div>
                 <div class="sidebar-title">
                     <h4>Registration Portal</h4>
@@ -162,7 +162,7 @@
                             <div style="border-top: 1px solid var(--gray-light); margin: 0.5rem 0;"></div>
                             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                 @csrf
-                                <button type="submit" class="btn-link" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                <button type="submit" class="submit-btn" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                             </form>
                         </div>
                     </div>

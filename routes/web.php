@@ -15,6 +15,7 @@ Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
  * - GET  /login: show login page (or redirect to home if login is a modal/section)
  * - POST /login: perform login
  */
+
 Route::get('/login', [LandingController::class, 'index'])->name('login');
 Route::post('/login', [LandingController::class, 'login'])->name('login.post');
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
@@ -24,9 +25,13 @@ Route::post('/logout', [LandingController::class, 'logout'])->middleware('auth')
 
 Route::middleware('auth')->group(function () {
     Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');
-    Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');  
+    Route::post('/applications', [ApplicationController::class, 'store'])->name('applications.store');
+    Route::get('/applications/{application}/success', [ApplicationController::class, 'show'])->name('applications.success');
+    Route::get('/applications/{application}/acknowledgement', [ApplicationController::class, 'acknowledgement'])->name('applications.acknowledgement');
     Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
 });
+
+
 
     Route::prefix('admin')->name('web.admin.')->group(function () {
         Route::middleware(['role:reviewer,admin,superadmin'])->group(function () {

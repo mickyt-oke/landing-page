@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/applications/{application}/success', [ApplicationController::class, 'show'])->name('applications.success');
     Route::get('/applications/{application}/acknowledgement', [ApplicationController::class, 'acknowledgement'])->name('applications.acknowledgement');
     Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/{application}/documents', [ApplicationController::class, 'documents'])->name('applications.documents');
+    Route::post('/applications/{application}/documents', [ApplicationController::class, 'uploadDocument'])->name('applications.documents.upload');
+    Route::get('/applications/{application}/documents/{document}/download', [ApplicationController::class, 'downloadDocument'])->name('applications.documents.download');   
 });
 
 

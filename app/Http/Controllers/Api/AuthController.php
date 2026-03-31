@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\JWTGuard;
 
@@ -79,11 +80,18 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        Auth::guard('api')->logout();
+        try {
+            Auth::guard('api')->logout();
+        } catch (JWTException) {
+            // Token already expired or invalid — logout goal is already achieved.
+        }
 
-        return response()->json([
-            'message' => 'Logged out successfully.',
-        ]);
+        return response()->json(['message' => 'Logged out successfully.'])
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma'        => 'no-cache',
+                'Expires'       => '0',
+            ]);
     }
 
     public function refresh(): JsonResponse

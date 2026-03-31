@@ -3,135 +3,163 @@
 @php
     /** @var \App\Models\User|null $currentUser */
     $currentUser = auth()->user();
-    $firstName = filled($currentUser?->name) ? explode(' ', trim($currentUser->name))[0] : 'there';
+    $firstName   = filled($currentUser?->name)
+        ? explode(' ', trim($currentUser->name))[0]
+        : 'there';
 
-
+    $statusMap = [
+        'pending'      => ['label' => 'Pending',      'class' => 'pending'],
+        'under_review' => ['label' => 'Under Review',  'class' => 'under-review'],
+        'approved'     => ['label' => 'Approved',      'class' => 'approved'],
+        'rejected'     => ['label' => 'Rejected',      'class' => 'rejected'],
+    ];
 @endphp
 
-<!-- Dashboard Content -->
 <div class="dashboard-content">
-    <!-- Welcome Section -->
+
+    {{-- ── Welcome ─────────────────────────────────────────── --}}
     <div class="welcome-section">
         <div class="welcome-content">
             <h2>Welcome back, {{ $firstName }}!</h2>
-            <p>Manage your application and track status</p>
+            <p>Manage your application and track its status below.</p>
         </div>
-
         <div class="welcome-action">
             <a href="{{ route('applications.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                New Application
+                <i class="fas fa-plus" aria-hidden="true"></i> New Application
             </a>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    {{-- <div class="stats-grid">
-        @foreach ($statCards as $card)
-            <div class="stat-card {{ $card['cardClass'] }}">
-                <div class="stat-icon {{ $card['iconClass'] }}">
-                    <i class="fas {{ $card['icon'] }}"></i>
-                </div>
-
-                <div class="stat-value" id="{{ $card['key'] }}">{{ $card['value'] }}</div>
-                <div class="stat-label">{{ $card['label'] }}</div>
+    {{-- ── Stats Cards ──────────────────────────────────────── --}}
+    <div class="stats-grid">
+        <div class="stat-card info">
+            <div class="stat-icon info">
+                <i class="fas fa-file-alt" aria-hidden="true"></i>
             </div>
-        @endforeach
-    </div> --}}
+            <div class="stat-value">{{ $stats['total_applications'] }}</div>
+            <div class="stat-label">Total Applications</div>
+        </div>
 
-    <!-- Recent Applications -->
+        <div class="stat-card warning">
+            <div class="stat-icon warning">
+                <i class="fas fa-clock" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value">{{ $stats['pending'] }}</div>
+            <div class="stat-label">Pending / Under Review</div>
+        </div>
+
+        <div class="stat-card success">
+            <div class="stat-icon primary">
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value">{{ $stats['approved'] }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+
+        <div class="stat-card danger">
+            <div class="stat-icon danger">
+                <i class="fas fa-times-circle" aria-hidden="true"></i>
+            </div>
+            <div class="stat-value">{{ $stats['rejected'] }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+
+    {{-- ── Applications Table ───────────────────────────────── --}}
     <div class="content-card" id="applications">
         <div class="card-header">
-            <h3 class="card-title">My Application</h3>
-
+            <h3 class="card-title">My Applications</h3>
             <div class="card-actions">
-                <button class="btn btn-outline btn-sm" type="button" aria-label="Filter applications">
-                    <i class="fas fa-filter"></i>
-                    Filter
-                </button>
-
                 <a class="btn btn-primary btn-sm" href="{{ route('applications.create') }}">
-                    <i class="fas fa-plus"></i>
-                    New
+                    <i class="fas fa-plus" aria-hidden="true"></i> New
                 </a>
             </div>
         </div>
 
         <div class="card-body">
-            {{-- <!-- Filter Tabs -->
-            <div class="filter-tabs" role="tablist" aria-label="Application filters">
-                @foreach ($filterTabs as $tab)
-                    <button
-                        class="filter-tab {{ $tab['active'] ? 'active' : '' }}"
-                        data-filter="{{ $tab['filter'] }}"
-                        type="button"
-                        role="tab"
-                        aria-selected="{{ $tab['active'] ? 'true' : 'false' }}"
-                    >
-                        {{ $tab['label'] }} <span class="count">{{ $tab['count'] }}</span>
-                    </button>
-                @endforeach
-            </div> --}}
 
-            <!-- Applications Table -->
-            <div class="table-container">
-                <table class="data-table">
+            {{-- Desktop Table --}}
+            <div class="table-container" role="region" aria-label="Applications table">
+                <table class="data-table" aria-label="My applications">
                     <thead>
                         <tr>
-                            <th>App ID</th>
-                            <th>Ref ID</th>
-                            <th>Type</th>
-                            <th>Submitted Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th scope="col">App ID</th>
+                            <th scope="col">Ref No.</th>
+                            <th scope="col">Visa Type</th>
+                            <th scope="col">Submitted</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody id="applicationsTableBody">
+                    <tbody>
                         @forelse ($applications as $app)
+                            @php
+                                $si = $statusMap[$app->status] ?? ['label' => ucfirst($app->status), 'class' => 'pending'];
+                                $docs = $app->documents->map(fn ($d) => [
+                                    'type' => $d->document_type,
+                                    'name' => $d->original_name,
+                                    'mime' => $d->mime_type ?? '',
+                                    'size' => $d->size_bytes ?? 0,
+                                ]);
+                                $submittedAt = ($app->submitted_at ?? $app->created_at)?->format('d M Y, H:i');
+                                $address = implode(', ', array_filter([$app->address, $app->city, $app->state]));
+                            @endphp
                             <tr>
+                                <td><span class="app-id-cell">#{{ $app->id }}</span></td>
+                                <td class="font-mono">{{ $app->ack_ref_number ?: '—' }}</td>
+                                <td>{{ $app->visa_category ?: '—' }}</td>
+                                <td>{{ optional($app->created_at)->format('d M Y') }}</td>
                                 <td>
-                                    <div class="font-semibold text-dark">{{ $app->id }}</div>
-                                </td>
-                                <td class="font-mono">{{ $app->ack_ref_number ?: '-' }}</td>
-                                <td>{{ $app->visa_category }}</td>
-                                <td>{{ optional($app->created_at)->format('M d, Y') }}</td>
-                                <td>
-                                    <span class="status-badge {{ $app->status }}">
-                                        {{ ucfirst($app->status) }}
+                                    <span class="status-badge {{ $si['class'] }}">
+                                        {{ $si['label'] }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="action-btns">
-                                        <button
-                                            class="action-btn view"
+                                        {{-- View Details --}}
+                                        <button class="action-btn view"
+                                            type="button"
+                                            title="View Details"
+                                            aria-label="View details for application #{{ $app->id }}"
                                             data-action="view"
                                             data-application-id="{{ $app->id }}"
-                                            title="View Details"
-                                            type="button"
-                                        >
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button
-                                            class="action-btn ack-preview"
-                                            data-app-id="{{ $app->id }}"
-                                            data-ack-ref="{{ $app->ack_ref_number }}"
-                                            data-submitted="{{ $app->submitted_at?->format('d M Y H:i') ?? '' }}"
+                                            data-ref="{{ $app->ack_ref_number }}"
                                             data-name="{{ $app->full_name }}"
                                             data-passport="{{ $app->passport_number }}"
                                             data-nationality="{{ $app->nationality }}"
                                             data-visa="{{ $app->visa_category }}"
                                             data-arrival="{{ $app->arrival_date?->format('d M Y') }}"
+                                            data-submitted="{{ $submittedAt }}"
                                             data-status="{{ $app->status }}"
-                                            title="View Acknowledgement"
+                                            data-status-label="{{ $si['label'] }}"
+                                            data-address="{{ $address }}"
+                                            data-docs="{{ e(json_encode($docs)) }}">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+
+                                        {{-- Acknowledgement --}}
+                                        <button class="action-btn ack-preview"
                                             type="button"
-                                        >
-                                            <i class="fas fa-receipt"></i>
+                                            title="View Acknowledgement"
+                                            aria-label="View acknowledgement for application #{{ $app->id }}"
+                                            data-app-id="{{ $app->id }}"
+                                            data-ack-ref="{{ $app->ack_ref_number }}"
+                                            data-submitted="{{ $submittedAt }}"
+                                            data-name="{{ $app->full_name }}"
+                                            data-passport="{{ $app->passport_number }}"
+                                            data-nationality="{{ $app->nationality }}"
+                                            data-visa="{{ $app->visa_category }}"
+                                            data-arrival="{{ $app->arrival_date?->format('d M Y') }}"
+                                            data-status="{{ $app->status }}">
+                                            <i class="fas fa-receipt" aria-hidden="true"></i>
                                         </button>
 
                                         @if ($app->status === 'pending')
-                                            <a class="action-btn edit" title="Edit Application" href="{{ route('applications.show', $app->id) }}">
-                                                <i class="fas fa-edit"></i>
+                                            <a class="action-btn edit"
+                                               title="Edit Application"
+                                               aria-label="Edit application #{{ $app->id }}"
+                                               href="{{ route('applications.show', $app->id) }}">
+                                                <i class="fas fa-edit" aria-hidden="true"></i>
                                             </a>
                                         @endif
                                     </div>
@@ -139,230 +167,199 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="empty-state">
-                                    No applications found.
+                                <td colspan="6" class="empty-state-cell">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">
+                                            <i class="fas fa-folder-open" aria-hidden="true"></i>
+                                        </div>
+                                        <h3 class="empty-title">No applications yet</h3>
+                                        <p class="empty-text">Start your registration by submitting your first application.</p>
+                                        <a href="{{ route('applications.create') }}" class="btn btn-primary" style="margin-top:1rem;">
+                                            <i class="fas fa-plus" aria-hidden="true"></i> New Application
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{-- Mobile Cards --}}
+            @if ($applications->isNotEmpty())
+            <div class="app-card-list" aria-label="Applications list">
+                @foreach ($applications as $app)
+                    @php
+                        $si = $statusMap[$app->status] ?? ['label' => ucfirst($app->status), 'class' => 'pending'];
+                        $submittedAt = ($app->submitted_at ?? $app->created_at)?->format('d M Y, H:i');
+                        $address = implode(', ', array_filter([$app->address, $app->city, $app->state]));
+                        $docs = $app->documents->map(fn ($d) => [
+                            'type' => $d->document_type,
+                            'name' => $d->original_name,
+                            'mime' => $d->mime_type ?? '',
+                            'size' => $d->size_bytes ?? 0,
+                        ]);
+                    @endphp
+                    <div class="app-card">
+                        <div class="app-card-head">
+                            <span class="app-id-cell">#{{ $app->id }}</span>
+                            <span class="status-badge {{ $si['class'] }}">{{ $si['label'] }}</span>
+                        </div>
+                        <div class="app-card-body">
+                            <div class="app-card-row">
+                                <span class="app-card-label">Ref No.</span>
+                                <span class="font-mono">{{ $app->ack_ref_number ?: '—' }}</span>
+                            </div>
+                            <div class="app-card-row">
+                                <span class="app-card-label">Visa Type</span>
+                                <span>{{ $app->visa_category ?: '—' }}</span>
+                            </div>
+                            <div class="app-card-row">
+                                <span class="app-card-label">Submitted</span>
+                                <span>{{ optional($app->created_at)->format('d M Y') }}</span>
+                            </div>
+                        </div>
+                        <div class="app-card-actions">
+                            <button class="action-btn view"
+                                type="button" title="View Details"
+                                data-action="view"
+                                data-application-id="{{ $app->id }}"
+                                data-ref="{{ $app->ack_ref_number }}"
+                                data-name="{{ $app->full_name }}"
+                                data-passport="{{ $app->passport_number }}"
+                                data-nationality="{{ $app->nationality }}"
+                                data-visa="{{ $app->visa_category }}"
+                                data-arrival="{{ $app->arrival_date?->format('d M Y') }}"
+                                data-submitted="{{ $submittedAt }}"
+                                data-status="{{ $app->status }}"
+                                data-status-label="{{ $si['label'] }}"
+                                data-address="{{ $address }}"
+                                data-docs="{{ e(json_encode($docs)) }}">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                            <button class="action-btn ack-preview"
+                                type="button" title="Acknowledgement"
+                                data-app-id="{{ $app->id }}"
+                                data-ack-ref="{{ $app->ack_ref_number }}"
+                                data-submitted="{{ $submittedAt }}"
+                                data-name="{{ $app->full_name }}"
+                                data-passport="{{ $app->passport_number }}"
+                                data-nationality="{{ $app->nationality }}"
+                                data-visa="{{ $app->visa_category }}"
+                                data-arrival="{{ $app->arrival_date?->format('d M Y') }}"
+                                data-status="{{ $app->status }}">
+                                <i class="fas fa-receipt" aria-hidden="true"></i>
+                            </button>
+                            @if ($app->status === 'pending')
+                                <a class="action-btn edit"
+                                   href="{{ route('applications.show', $app->id) }}"
+                                   title="Edit Application">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            @endif
+
         </div>
     </div>
+
 </div>
         </main>
     </div>
 
-    <!-- Application Details Modal -->
-    <div class="modal-overlay" id="applicationModal">
+    {{-- ── Application Details Modal ────────────────────────── --}}
+    <div class="modal-overlay" id="applicationModal"
+         role="dialog" aria-modal="true" aria-labelledby="appModalTitle">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 class="modal-title">Application Details</h3>
+                <div>
+                    <h3 class="modal-title" id="appModalTitle">Application Details</h3>
+                    <p class="modal-subtitle" id="modalAppRef"></p>
+                </div>
                 <button class="modal-close" type="button" aria-label="Close modal">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
 
             <div class="modal-body">
+                {{-- Status Banner --}}
+                <div class="modal-status-banner">
+                    <span class="status-badge" id="modalStatus">—</span>
+                    <span class="modal-status-date" id="modalStatusDate"></span>
+                </div>
+
+                {{-- Applicant Information --}}
                 <div class="detail-section">
                     <h4 class="detail-section-title">
-                        <i class="fas fa-user"></i>
-                        Applicant Information
+                        <i class="fas fa-user" aria-hidden="true"></i> Applicant Information
                     </h4>
-
                     <div class="detail-grid">
                         <div class="detail-item">
                             <div class="detail-label">Full Name</div>
-                            <div class="detail-value" id="modalApplicantName">-</div>
+                            <div class="detail-value" id="modalApplicantName">—</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Passport Number</div>
-                            <div class="detail-value" id="modalPassportNumber">-</div>
+                            <div class="detail-value font-mono" id="modalPassportNumber">—</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Nationality</div>
-                            <div class="detail-value" id="modalNationality">-</div>
+                            <div class="detail-value" id="modalNationality">—</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Visa Category</div>
-                            <div class="detail-value" id="modalVisaCategory">-</div>
+                            <div class="detail-value" id="modalVisaCategory">—</div>
                         </div>
                     </div>
                 </div>
 
+                {{-- Travel Information --}}
                 <div class="detail-section">
                     <h4 class="detail-section-title">
-                        <i class="fas fa-plane"></i>
-                        Travel Information
+                        <i class="fas fa-plane" aria-hidden="true"></i> Travel Information
                     </h4>
-
                     <div class="detail-grid">
                         <div class="detail-item">
                             <div class="detail-label">Arrival Date</div>
-                            <div class="detail-value" id="modalArrivalDate">-</div>
+                            <div class="detail-value" id="modalArrivalDate">—</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">Submitted Date</div>
-                            <div class="detail-value" id="modalSubmittedDate">-</div>
+                            <div class="detail-label">Submitted</div>
+                            <div class="detail-value" id="modalSubmittedDate">—</div>
                         </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Current Status</div>
-                            <div class="detail-value">
-                                <span class="status-badge" id="modalStatus">-</span>
-                            </div>
+                        <div class="detail-item" id="modalAddressItem">
+                            <div class="detail-label">Address in Nigeria</div>
+                            <div class="detail-value" id="modalAddress">—</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="detail-section">
+                {{-- Uploaded Documents (populated by JS from real data) --}}
+                <div class="detail-section" id="modalDocsSection">
                     <h4 class="detail-section-title">
-                        <i class="fas fa-folder-open"></i>
-                        Uploaded Documents
+                        <i class="fas fa-folder-open" aria-hidden="true"></i> Uploaded Documents
                     </h4>
-
-                    <div class="document-list">
-                        <!-- NOTE: Document items are currently static placeholders. Consider rendering real uploaded docs from the backend. -->
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <div class="document-info">
-                                <div class="document-name">Passport Data Page</div>
-                                <div class="document-meta">PDF • 2.4 MB</div>
-                            </div>
-                            <button class="document-action" type="button">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                        </div>
-
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <div class="document-info">
-                                <div class="document-name">Entry Visa</div>
-                                <div class="document-meta">PDF • 1.8 MB</div>
-                            </div>
-                            <button class="document-action" type="button">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                        </div>
-
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-image"></i>
-                            </div>
-                            <div class="document-info">
-                                <div class="document-name">Entry Stamp</div>
-                                <div class="document-meta">JPEG • 856 KB</div>
-                            </div>
-                            <button class="document-action" type="button">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                        </div>
-
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <div class="document-info">
-                                <div class="document-name">Return Ticket</div>
-                                <div class="document-meta">PDF • 1.2 MB</div>
-                            </div>
-                            <button class="document-action" type="button">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                        </div>
-                    </div>
+                    <div class="document-list" id="modalDocumentList"></div>
                 </div>
-            </div>
-    </div>
-    </div>
-
-    <!-- Acknowledgement Preview Modal -->
-    <div class="modal-overlay" id="ackModal" style="display: none;">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title">Application Acknowledgement</h3>
-                <button class="modal-close" onclick="closeAckModal()" type="button" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="ackContent">
-                <!-- Content loaded dynamically -->
             </div>
         </div>
     </div>
 
-    <script>
-    function closeAckModal() {
-        document.getElementById('ackModal').style.display = 'none';
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ack preview
-        document.querySelectorAll('.ack-preview').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const data = this.dataset;
-                const content = generateAckContent(data);
-                document.getElementById('ackContent').innerHTML = content;
-                document.getElementById('ackModal').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
-        // Close modal on overlay click
-        document.getElementById('ackModal').addEventListener('click', function(e) {
-            if (e.target === this) closeAckModal();
-        });
-    });
-
-    function generateAckContent(data) {
-        const statusClass = data.status === 'approved' ? 'success' : data.status === 'rejected' ? 'danger' : 'warning';
-        return `
-            <style>
-                @media print { .no-print { display: none !important; } }
-                .nis-header { background: linear-gradient(135deg, #003087, #0056b3); color: white; padding: 1rem; text-align: center; border-radius: 8px 8px 0 0; }
-                .ref-badge { background: #28a745; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; font-weight: bold; font-size: 1.3em; display: inline-block; }
-                .ack-details td:first-child { font-weight: bold; width: 40%; }
-            </style>
-            <div class="no-print text-center mb-3">
-                <button onclick="window.print()" class="btn btn-success">Print Acknowledgement</button>
+    {{-- ── Acknowledgement Modal ───────────────────────────── --}}
+    <div class="modal-overlay" id="ackModal"
+         role="dialog" aria-modal="true" aria-labelledby="ackModalTitle">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title" id="ackModalTitle">Application Acknowledgement</h3>
+                <button class="modal-close" type="button" aria-label="Close acknowledgement">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="nis-header">
-                <h2>Nigeria Immigration Service</h2>
-                <p>Foreigners Registration Portal</p>
-            </div>
-            <div style="padding: 2rem; border: 1px solid #ddd; background: #fafafa;">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: #003087;">APPLICATION ACKNOWLEDGEMENT</h1>
-                    <div class="ref-badge">Ref: \${data.ackRef || 'N/A'}</div>
-                    <p>Date: \${data.submitted || 'N/A'}</p>
-                </div>
-                <table style="width: 100%; margin-bottom: 1rem;">
-                    <tr><td><strong>Full Name:</strong></td><td>\${data.name}</td></tr>
-                    <tr><td><strong>Passport:</strong></td><td>\${data.passport}</td></tr>
-                    <tr><td><strong>Nationality:</strong></td><td>\${data.nationality}</td></tr>
-                    <tr><td><strong>Visa:</strong></td><td>\${data.visa}</td></tr>
-                    <tr><td><strong>Arrival:</strong></td><td>\${data.arrival}</td></tr>
-                    <tr><td><strong>Status:</strong></td><td><span class="badge bg-\${statusClass}">\${data.status?.toUpperCase()}</span></td></tr>
-                </table>
-                <div style="padding: 1rem; background: white; border-left: 4px solid #003087;">
-                    <h5>Next Steps</h5>
-                    <ul>
-                        <li>Application received and \${data.status === 'approved' ? 'approved' : 'under review'}</li>
-                        <li>Track using reference number</li>
-                        <li>Processing: 5-10 days</li>
-                    </ul>
-                </div>
-            </div>
-        `;
-    }
-    </script>
+            <div class="modal-body" id="ackContent"></div>
+        </div>
+    </div>
 
 @include('partials.footer')

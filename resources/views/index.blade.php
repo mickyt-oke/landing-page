@@ -12,29 +12,27 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#004080">
 
-  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome for icons -->
+
+  <!-- Font Awesome -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
   <!-- Favicon -->
   <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-  <!-- apple-touch-icon -->
   <link rel="apple-touch-icon" href="{{ asset('assets/images/nis.png') }}">
 
-  <!-- Open Graph Meta Tags for social media sharing -->
+  <!-- Open Graph -->
   <meta property="og:title" content="Migrants Overstay Portal | Nigeria Immigration Service">
-  <meta property="og:description" content="Apply now to avoid overstay penalties with the Nigeria Immigration Service. Submit your documents, avoid penalties, and stay compliant with immigration regulations. Fast, secure, and transparent application process.">
+  <meta property="og:description" content="Apply now to avoid overstay penalties with the Nigeria Immigration Service. Submit your documents, avoid penalties, and stay compliant with immigration regulations.">
   <meta property="og:image" content="{{ asset('assets/images/nis.png') }}">
-  <meta property="og:url" content="https://immigration.gov.ng">  
+  <meta property="og:url" content="https://immigration.gov.ng">
 </head>
 <body>
   <!-- HEADER -->
@@ -42,7 +40,7 @@
     <div class="container">
       <nav class="nav">
         <div class="logo-container">
-          <img src="{{ asset('assets/images/nis-logo.jpg') }}" alt="NIS Logo" class="logo-img-mobile" width="110" height="38" loading="eager" decoding="async" fetchpriority="high" onerror="this.src='https://via.placeholder.com/40?text=NIS'">
+          <img src="{{ asset('assets/images/nis-logo.jpg') }}" alt="NIS Logo" class="logo-img-mobile" width="110" height="38" loading="eager" decoding="async" fetchpriority="high" onerror="this.style.display='none'">
           <div class="logo-text">
             <span class="logo-text-main"></span>
           </div>
@@ -51,80 +49,75 @@
         <div class="nav-menu">
           <a href="{{ route('faq') }}" class="faq-nav-link">FAQ</a>
           <div class="dropdown">
-            <button class="dropdown-btn">
+            <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
               Account
-              <i class="fas fa-chevron-down"></i>
+              <i class="fas fa-chevron-down" aria-hidden="true"></i>
             </button>
             <div class="dropdown-content">
               @guest
-                <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
-                <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+                <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login</a>
+                <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus" aria-hidden="true"></i> Register</a>
               @else
-                <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt" aria-hidden="true"></i> Dashboard</a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
               @endguest
             </div>
           </div>
         </div>
 
-        <div class="hamburger" id="hamburger">
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </button>
       </nav>
     </div>
   </header>
 
   <!-- MOBILE MENU -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="{{ route('faq') }}"><i class="fas fa-circle-question"></i> FAQ</a>
+  <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile menu">
+    <a href="{{ route('faq') }}"><i class="fas fa-circle-question" aria-hidden="true"></i> FAQ</a>
     @guest
-      <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt"></i> Login</a>
-      <!-- <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus"></i> Register</a> -->
+      <a href="#" class="modal-trigger" data-modal="login"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login</a>
+      <a href="#" class="modal-trigger" data-modal="register"><i class="fas fa-user-plus" aria-hidden="true"></i> Register</a>
     @else
-      <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt" aria-hidden="true"></i> Dashboard</a>
       <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display:none;">@csrf</form>
-      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
     @endguest
   </div>
-  <div class="overlay" id="overlay"></div>
-
-  @include('partials.modals.login')
-   
-  @include('partials.modals.register')
-
-  @include('partials.modals.eligibility')
-    
-  @include('partials.modals.status')
-
-  </div>
+  <div class="overlay" id="overlay" role="presentation"></div>
 
   @if(session('success'))
-    <div class="alert alert-success" role="alert" style="margin: 1rem; padding: .75rem 1rem; border: 1px solid #28a745; background:#e6ffed; color:#155724; border-radius:4px;">
+    <div class="alert alert-success" role="alert" style="margin: 1rem; padding: .75rem 1rem; border: 1px solid #badbcc; background:#d1e7dd; color:#0a3622; border-radius:8px;">
       {{ session('success') }}
     </div>
   @endif
+
+  @include('partials.modals.login')
+  @include('partials.modals.register')
+  @include('partials.modals.eligibility')
+  @include('partials.modals.status')
 
   <main>
     <!-- HERO SECTION -->
     <section class="hero">
       <div class="hero-bg">
-        <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer" loading="eager" decoding="async" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1578575436955-ef29da568c6c?w=1600'">
+        <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer" loading="eager" decoding="async" fetchpriority="high" onerror="this.style.display='none'">
       </div>
       <div class="hero-overlay"></div>
-      
+
       <div class="container">
         <div class="hero-content">
           <h1>Registration of Foreign Nationals</h1>
           <p>Affected by the Middle-East Crisis</p>
           <div class="hero-buttons">
-<a href="#" class="btn btn-outline modal-trigger" data-modal="login">
-              <i class="fas fa-user"></i> Apply Now
+            <a href="#" class="btn btn-outline modal-trigger" data-modal="login">
+              <i class="fas fa-user" aria-hidden="true"></i> Apply Now
             </a>
-            <a href="#" data-modal="checkStatusModal" class="btn btn-outline modal-trigger">
-              <i class="fas fa-search"></i> Check Status
+            <a href="#" class="btn btn-outline modal-trigger" data-modal="checkStatus">
+              <i class="fas fa-search" aria-hidden="true"></i> Check Status
             </a>
           </div>
         </div>
@@ -139,7 +132,7 @@
             <div class="carousel-track" id="carouselTrack">
               <div class="carousel-slide">
                 <div class="carousel-icon">
-                  <i class="fas fa-shield-alt"></i>
+                  <i class="fas fa-shield-alt" aria-hidden="true"></i>
                 </div>
                 <div class="carousel-content">
                   <h3>Avoid Overstay Penalties</h3>
@@ -148,7 +141,7 @@
               </div>
               <div class="carousel-slide">
                 <div class="carousel-icon">
-                  <i class="fas fa-file-upload"></i>
+                  <i class="fas fa-file-upload" aria-hidden="true"></i>
                 </div>
                 <div class="carousel-content">
                   <h3>Upload Required Documents</h3>
@@ -157,7 +150,7 @@
               </div>
               <div class="carousel-slide">
                 <div class="carousel-icon">
-                  <i class="fas fa-clock"></i>
+                  <i class="fas fa-clock" aria-hidden="true"></i>
                 </div>
                 <div class="carousel-content">
                   <h3>Fast Review Process</h3>
@@ -165,19 +158,19 @@
                 </div>
               </div>
             </div>
-            
-            <button class="carousel-btn prev" id="prevBtn">
-              <i class="fas fa-chevron-left"></i>
+
+            <button class="carousel-btn prev" id="prevBtn" aria-label="Previous slide">
+              <i class="fas fa-chevron-left" aria-hidden="true"></i>
             </button>
-            <button class="carousel-btn next" id="nextBtn">
-              <i class="fas fa-chevron-right"></i>
+            <button class="carousel-btn next" id="nextBtn" aria-label="Next slide">
+              <i class="fas fa-chevron-right" aria-hidden="true"></i>
             </button>
           </div>
-          
-          <div class="carousel-dots" id="carouselDots">
-            <button class="dot active"></button>
-            <button class="dot"></button>
-            <button class="dot"></button>
+
+          <div class="carousel-dots" id="carouselDots" role="tablist" aria-label="Carousel navigation">
+            <button class="dot active" role="tab" aria-label="Slide 1" aria-selected="true"></button>
+            <button class="dot" role="tab" aria-label="Slide 2" aria-selected="false"></button>
+            <button class="dot" role="tab" aria-label="Slide 3" aria-selected="false"></button>
           </div>
         </div>
       </div>
@@ -188,16 +181,16 @@
       <div class="container">
         <h2 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">The Nations Foremost Border Agency</h2>
         <p style="text-align: center; color: var(--gray); max-width: 600px; margin: 0 auto 3rem;">Dedicated professionals ensuring border security and immigration compliance</p>
-        
+
         <div class="gallery-grid">
           <div class="gallery-item">
-            <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer 2" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+            <img src="{{ asset('assets/images/nis_officer2.jpg') }}" alt="NIS Officer on duty" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
           <div class="gallery-item">
-            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="NIS Officer 3" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1578575436955-ef29da568c6c?w=800'">
+            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="NIS Officer at checkpoint" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
           <div class="gallery-item">
-            <img src="{{ asset('assets/images/nis_officer4.jpg') }}" alt="NIS Officer 4" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+            <img src="{{ asset('assets/images/nis_officer4.jpg') }}" alt="NIS Officer in uniform" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
         </div>
       </div>
@@ -208,22 +201,22 @@
       <div class="container">
         <div class="about-grid">
           <div class="about-image">
-            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="Immigration officers" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1587502537104-aac9f540c691?w=800'">
+            <img src="{{ asset('assets/images/nis_officer3.jpg') }}" alt="Immigration officers" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
           <div class="about-content">
             <h2>About the Portal</h2>
             <p class="mb-4">This Portal enables foreign nationals and travellers across the Middle-East document their stay so as to remain compliant with Immigration laws to avoid overstay penalties.</p>
             <ul class="about-features">
               <li>
-                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
                 <span>Transparent online application process</span>
               </li>
               <li>
-                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
                 <span>Secure document upload with encryption</span>
               </li>
               <li>
-                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
                 <span>Expert guidance from NIS officials</span>
               </li>
             </ul>
@@ -237,25 +230,25 @@
       <div class="container">
         <h2 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Simple Steps</h2>
         <p style="text-align: center; color: var(--gray); max-width: 600px; margin: 0 auto 3rem;">Simple steps to complete your application</p>
-        
+
         <div class="cards-grid">
           <div class="card">
             <div class="card-icon">
-              <i class="fas fa-user-plus"></i>
+              <i class="fas fa-user-plus" aria-hidden="true"></i>
             </div>
             <h3>Register Account</h3>
             <p>Create a secure profile with your personal and travel info</p>
           </div>
           <div class="card">
             <div class="card-icon">
-              <i class="fas fa-passport"></i>
+              <i class="fas fa-passport" aria-hidden="true"></i>
             </div>
             <h3>Upload &amp; Submit</h3>
             <p>Submit your travel documents for review</p>
           </div>
           <div class="card">
             <div class="card-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
+              <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
             </div>
             <h3>Get Approval</h3>
             <p>Receive Acknowledgement of your Application</p>
@@ -269,11 +262,11 @@
       <div class="container">
         <div class="notice">
           <div class="notice-icon">
-            <i class="fas fa-exclamation-triangle"></i>
+            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
           </div>
           <div class="notice-content">
             <h4>Eligibility Notice</h4>
-            <p>Please check eligibility criteria <a href="#" data-modal="eligibilityModal" class="modal-trigger">here</a></p>
+            <p>Please check eligibility criteria <a href="#" data-modal="eligibility" class="modal-trigger">here</a></p>
           </div>
         </div>
       </div>
@@ -291,38 +284,37 @@
         <div class="footer-col">
           <h4>Quick Links</h4>
           <ul>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Immigration Policies</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Visa Information</a></li>
-            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Support</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right" aria-hidden="true"></i> Immigration Policies</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right" aria-hidden="true"></i> Visa Information</a></li>
+            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right" aria-hidden="true"></i> FAQ</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right" aria-hidden="true"></i> Contact Support</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Support</h4>
           <ul>
-            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+            <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right" aria-hidden="true"></i> FAQ</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right" aria-hidden="true"></i> Privacy Policy</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right" aria-hidden="true"></i> Terms &amp; Conditions</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Contact</h4>
           <ul class="contact-info">
-            <li><i class="fas fa-envelope"></i> nis.servicom@immigration.gov.ng</li>
-            <li><i class="fas fa-phone"></i> +234 800 123 4567</li>
-            <li><i class="fas fa-map-marker-alt"></i> Abuja, Nigeria</li>
+            <li><i class="fas fa-envelope" aria-hidden="true"></i> nis.servicom@immigration.gov.ng</li>
+            <li><i class="fas fa-phone" aria-hidden="true"></i> +234 800 123 4567</li>
+            <li><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Abuja, Nigeria</li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2026 Nigeria Immigration Service. All Rights Reserved.</p>
+        <p>&copy; 2026 Nigeria Immigration Service. All Rights Reserved.</p>
       </div>
     </div>
   </footer>
 
-  <!-- Carousel Script -->
+  <!-- Scripts -->
   <script src="{{ asset('assets/js/carousel.js') }}" defer></script>
-  <!-- Main Application Script -->
   <script src="{{ asset('assets/js/app.js') }}" defer></script>
 </body>
 </html>

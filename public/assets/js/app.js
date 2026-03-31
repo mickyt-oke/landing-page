@@ -237,8 +237,40 @@
 
   function switchModal(fromType, toType) {
     const fromModal = document.getElementById(fromType + 'Modal');
-    if (fromModal) closeModalElement(fromModal);
-    openModal(toType);
+    const toModal   = document.getElementById(toType   + 'Modal');
+
+    if (!fromModal || !toModal) {
+      if (fromModal) closeModalElement(fromModal);
+      openModal(toType);
+      return;
+    }
+
+    const fromContainer = fromModal.querySelector('.modal-container');
+    const toContainer   = toModal.querySelector('.modal-container');
+
+    // login → register slides left; register → login slides right
+    const slideOut = (fromType === 'login') ? 'slide-out-left'  : 'slide-out-right';
+    const slideIn  = (fromType === 'login') ? 'slide-in-right'  : 'slide-in-left';
+
+    // Show destination with a transparent backdrop so there is no flash
+    toModal.classList.add('active', 'modal-switching');
+    document.body.style.overflow = 'hidden';
+    if (toType === 'register') { currentStep = 1; showStep(1); }
+
+    if (fromContainer) fromContainer.classList.add(slideOut);
+    if (toContainer)   toContainer.classList.add(slideIn);
+
+    setTimeout(function() {
+      fromModal.classList.remove('active');
+      if (fromContainer) fromContainer.classList.remove(slideOut);
+
+      // Restore backdrop on destination modal
+      toModal.classList.remove('modal-switching');
+
+      setTimeout(function() {
+        if (toContainer) toContainer.classList.remove(slideIn);
+      }, 280);
+    }, 220);
   }
 
   // ===== PASSWORD VISIBILITY TOGGLE =====
@@ -701,48 +733,91 @@
     });
   }
 
-  // Check status form handling (using API for real-time status check without page reload)
+  // Check status form handling
   const checkStatusForm = document.getElementById('checkStatusForm');
   if (checkStatusForm) {
     checkStatusForm.addEventListener('submit', async function(e) {
       e.preventDefault();
 
       const reference = document.getElementById('statusReference')?.value.trim();
-      if (!reference) {
-        showAlert('Please enter your application reference number');
+      const passport  = document.getElementById('statusPassport')?.value.trim();
+
+      if (!reference && !passport) {
+        showAlert('Please enter your passport number or reference number');
         return;
+      }
+
+      const submitBtn = document.getElementById('checkStatusSubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
       }
 
       try {
         const response = await fetch('/api/status/check', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ reference })
+          body: JSON.stringify({ reference: reference || undefined, passport_number: passport || undefined })
         });
 
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-          showAlert(data.message || data.error || 'Failed to check status');
+          showAlert(data.message || data.error || 'No application found for the details provided');
           return;
         }
 
         if (data.status) {
-          // Display status in the modal
-          const resultEl = document.getElementById('statusResult');
-          if (resultEl) {
-            resultEl.textContent = 'Current Status: ' + data.status;
-            resultEl.style.display = 'block';
-          }
+          renderStatusResult(data);
         } else {
-          showAlert('Status not found for the provided reference number');
+          showAlert('No application found for the details provided');
         }
       } catch (error) {
         console.error('Error checking status:', error);
         showAlert('An error occurred. Please try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+        }
       }
     });
-  }   
+  }
+
+  function renderStatusResult(data) {
+    const resultEl  = document.getElementById('statusResult');
+    const badgeEl   = document.getElementById('statusBadge');
+    const rowsEl    = document.getElementById('statusResultRows');
+    if (!resultEl || !badgeEl || !rowsEl) return;
+
+    const statusMap = {
+      pending:  { label: 'Pending',     cls: 'pending',  icon: 'fa-clock' },
+      approved: { label: 'Approved',    cls: 'approved', icon: 'fa-check-circle' },
+      rejected: { label: 'Rejected',    cls: 'rejected', icon: 'fa-times-circle' },
+      review:   { label: 'Under Review',cls: 'review',   icon: 'fa-search' }
+    };
+
+    const s = statusMap[data.status.toLowerCase()] || { label: data.status, cls: 'pending', icon: 'fa-info-circle' };
+
+    badgeEl.className = 'status-badge ' + s.cls;
+    badgeEl.innerHTML = '<i class="fas ' + s.icon + '" aria-hidden="true"></i> ' + s.label;
+
+    const rows = [
+      { label: 'Applicant',   value: data.name       || '—' },
+      { label: 'Reference',   value: data.reference  || '—' },
+      { label: 'Submitted',   value: data.created_at || '—' },
+      { label: 'Last Updated',value: data.updated_at || '—' }
+    ];
+
+    rowsEl.innerHTML = rows.map(function(r) {
+      return '<div class="status-result-row">'
+           + '<span class="status-result-label">' + r.label + '</span>'
+           + '<span class="status-result-value">' + r.value + '</span>'
+           + '</div>';
+    }).join('');
+
+    resultEl.style.display = 'block';
+  }
 
   // Expose functions to window if needed for debugging
   window.AppPortal = {

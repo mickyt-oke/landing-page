@@ -1,460 +1,980 @@
 @include('partials.header')
 
-<main class="dashboard-content px-3 py-4">
-    <div class="container-fluid">
-            @if(session('status'))
-                        <div class="alert alert-success" role="alert">{{ session('status') }}</div>
-                                @endif
-                                
-        @if($errors->any())
-                    <div class="alert alert-danger" role="alert">
-                                    <ul class="mb-0">
-                                                        @foreach($errors->all() as $error)
-                                                                                <li>{{ $error }}</li>
-                                                                                                    @endforeach
-                                                                                                                    </ul>
-                                                                                                                                </div>
-                                                                                                                                        @endif
-                                                                                                                                        
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4 gap-3">
-                    <div>
-                                    <h2 class="mb-1">New Registration</h2>
-                                                    <p class="text-muted mb-0">Complete your profile and upload your documents to start your application.</p>
-                                                                </div>
-                                                                        </div>
-                                                                        
-        <div class="card shadow-sm">
-                    <div class="card-body">
-                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-                                                        <div class="step-progress">Progress: <strong class="progress-percentage">0%</strong> completed</div>
-                                                                            <div class="step-indicator d-flex gap-2" data-progress="0">
-                                                                                                    <div class="step active" id="step1" data-step="Biodata">
-                                                                                                                                <div class="step-number">1</div>
-                                                                                                                                                            <div class="step-text">Biodata</div>
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                                            <div class="step" id="step2" data-step="Travel Info">
-                                                                                                                                                                                                                                        <div class="step-number">2</div>
-                                                                                                                                                                                                                                                                    <div class="step-text">Travel Info</div>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                    <div class="step" id="step3" data-step="Documents">
-                                                                                                                                                                                                                                                                                                                                                <div class="step-number">3</div>
-                                                                                                                                                                                                                                                                                                                                                                            <div class="step-text">Documents</div>
-                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="step" id="step4" data-step="Review">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="step-number">4</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="step-text">Review</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                <form id="registrationForm" method="POST" action="{{ route('applications.store') }}" enctype="multipart/form-data" novalidate>
-                                    @csrf
-                                    
-                    <div id="step1Form" class="step-form" style="display: block;">
-                                            <div class="row gy-3">
-                                                                        <div class="col-md-6">
-                                                                                                        <label for="surname" class="form-label">Surname</label>
-                                                                                                                                        <input id="surname" name="surname" type="text" class="form-control @error('surname') is-invalid @enderror" placeholder="Enter surname" required value="{{ old('surname', $prefill['regSurname'] ?? '') }}">
-                                                                                                                                                                        @error('surname')
-                                                                                                                                                                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                            @enderror
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                        
-                            <div class="col-md-6">
-                                                            <label for="first_name" class="form-label">First Name</label>
-                                                                                            <input id="first_name" name="first_name" type="text" class="form-control @error('first_name') is-invalid @enderror" placeholder="Enter first name" required value="{{ old('first_name', $prefill['regFirstName'] ?? '') }}">
-                                                                                                                            @error('first_name')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="other_names" class="form-label">Other Names</label>
-                                                                                            <input id="other_names" name="other_names" type="text" class="form-control @error('other_names') is-invalid @enderror" placeholder="Enter other names (optional)" value="{{ old('other_names', $prefill['regOtherNames'] ?? '') }}">
-                                                                                                                            @error('other_names')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="passport_number" class="form-label">Passport Number</label>
-                                                                                            <input id="passport_number" name="passport_number" type="text" class="form-control @error('passport_number') is-invalid @enderror" placeholder="Enter passport number" required value="{{ old('passport_number', $prefill['regPassport'] ?? '') }}">
-                                                                                                                            @error('passport_number')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="nationality" class="form-label">Nationality</label>
-                                                                                            <select id="nationality" name="nationality" class="form-select @error('nationality') is-invalid @enderror" required>
-                                                                                                                                <option value="">Select nationality</option>
-                                                                                                                                                                    @foreach($nationalities as $nat)
-                                                                                                                                                                                                            <option value="{{ $nat }}" {{ old('nationality', $prefill['regNationality'] ?? '') === $nat ? 'selected' : '' }}>{{ $nat }}</option>
-                                                                                                                                                                                                                                                @endforeach
-                                                                                                                                                                                                                                                                                </select>
-                                                                                                                                                                                                                                                                                                                @error('nationality')
-                                                                                                                                                                                                                                                                                                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                                                                                                                                                                    @enderror
-                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                
-                            <div class="col-md-6">
-                                                            <label for="passport_expiry" class="form-label">Passport Expiry Date</label>
-                                                                                            <input id="passport_expiry" name="passport_expiry" type="date" class="form-control" value="{{ old('passport_expiry') }}">
-                                                                                                                        </div>
-                                                                                                                                                </div>
-                                                                                                                                                
-                        <div class="mt-4 d-flex justify-content-end">
-                                                    <button type="button" class="btn btn-primary" data-next-step="1">Next <i class="fas fa-arrow-right ms-2"></i></button>
-                                                                            </div>
-                                                                                                </div>
-                                                                                                
-                    <div id="step2Form" class="step-form" style="display: none;">
-                                            <div class="row gy-3">
-                                                                        <div class="col-md-6">
-                                                                                                        <label for="visa_category" class="form-label">Visa Category</label>
-                                                                                                                                        <select id="visa_category" name="visa_category" class="form-select @error('visa_category') is-invalid @enderror" required>
-                                                                                                                                                                            <option value="">Select Visa Category</option>
-                                                                                                                                                                                                                <option value="SVV" {{ old('visa_category') === 'SVV' ? 'selected' : '' }}>Short Visit Visa (SVV)</option>
-                                                                                                                                                                                                                                                    <option value="TRV" {{ old('visa_category') === 'TRV' ? 'selected' : '' }}>Temporary Residence Visa (TRV)</option>
-                                                                                                                                                                                                                                                                                    </select>
-                                                                                                                                                                                                                                                                                                                    @error('visa_category')
-                                                                                                                                                                                                                                                                                                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                                                                                                                                                                        @enderror
-                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                    
-                            <div class="col-md-6" id="svvCategory" style="display: none;">
-                                                            <label for="svvSubCat" class="form-label">SVV Sub-category</label>
-                                                                                            <select id="svvSubCat" name="svv_subcategory" class="form-select" aria-label="SVV Sub-category">
-                                                                                                                                <option value="">Select type</option>
-                                                                                                                                                                    <option value="F4A" {{ old('svv_subcategory') === 'F4A' ? 'selected' : '' }}>F4A</option>
-                                                                                                                                                                                                        <option value="F4B" {{ old('svv_subcategory') === 'F4B' ? 'selected' : '' }}>F4B</option>
-                                                                                                                                                                                                                                            <option value="F5A" {{ old('svv_subcategory') === 'F5A' ? 'selected' : '' }}>F5A</option>
-                                                                                                                                                                                                                                                                                <option value="F6A" {{ old('svv_subcategory') === 'F6A' ? 'selected' : '' }}>F6A</option>
-                                                                                                                                                                                                                                                                                                                </select>
-                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                            
-                            <div class="col-md-6" id="trvCategory" style="display: none;">
-                                                            <label for="trvSubCat" class="form-label">TRV Sub-category</label>
-                                                                                            <select id="trvSubCat" name="trv_subcategory" class="form-select" aria-label="TRV Sub-category">
-                                                                                                                                <option value="">Select type</option>
-                                                                                                                                                                    <option value="R2A" {{ old('trv_subcategory') === 'R2A' ? 'selected' : '' }}>R2A</option>
-                                                                                                                                                                                                        <option value="R6A" {{ old('trv_subcategory') === 'R6A' ? 'selected' : '' }}>R6A</option>
-                                                                                                                                                                                                                                        </select>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    
-                            <div class="col-md-4">
-                                                            <label for="arrival_date" class="form-label">Arrival Date</label>
-                                                                                            <input id="arrival_date" name="arrival_date" type="date" class="form-control @error('arrival_date') is-invalid @enderror" required value="{{ old('arrival_date') }}">
-                                                                                                                            @error('arrival_date')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-8">
-                                                            <label for="address" class="form-label">Address in Nigeria</label>
-                                                                                            <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror" placeholder="Street address" required value="{{ old('address') }}">
-                                                                                                                            @error('address')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="state" class="form-label">State</label>
-                                                                                            <select id="state" name="state" class="form-select @error('state') is-invalid @enderror" required>
-                                                                                                                                <option value="">Select state</option>
-                                                                                                                                                                </select>
-                                                                                                                                                                                                @error('state')
-                                                                                                                                                                                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                                                    @enderror
-                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                
-                            <div class="col-md-6">
-                                                            <label for="city" class="form-label">City</label>
-                                                                                            <select id="city" name="city" class="form-select @error('city') is-invalid @enderror" required disabled>
-                                                                                                                                <option value="">Select city</option>
-                                                                                                                                                                </select>
-                                                                                                                                                                                                @error('city')
-                                                                                                                                                                                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                                                    @enderror
-                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                
-                            <div class="col-12">
-                                                            <label for="applicant_note" class="form-label">Reason for Request</label>
-                                                                                            <select id="applicant_note" name="applicant_note" class="form-select" aria-describedby="reasonHelp">
-                                                                                                                                <option value="">Select reason</option>
-                                                                                                                                                                    <option value="Flight Cancellation" {{ old('applicant_note') === 'Flight Cancellation' ? 'selected' : '' }}>Flight Cancellation</option>
-                                                                                                                                                                                                        <option value="Delayed Flight" {{ old('applicant_note') === 'Delayed Flight' ? 'selected' : '' }}>Delayed Flight</option>
-                                                                                                                                                                                                                                            <option value="Other" {{ old('applicant_note') === 'Other' ? 'selected' : '' }}>Other</option>
-                                                                                                                                                                                                                                                                            </select>
-                                                                                                                                                                                                                                                                                                            <div id="reasonHelp" class="form-text">Optional note sent with your application.</div>
-                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                        
-                            <div class="col-12" id="reasonOtherWrapper" style="display: none;">
-                                                            <label for="reason_other_text" class="form-label">Please specify reason</label>
-                                                                                            <textarea id="reason_other_text" name="reason_other_text" class="form-control" rows="3">{{ old('reason_other_text') }}</textarea>
-                                                                                                                        </div>
-                                                                                                                                                </div>
-                                                                                                                                                
-                        <div class="mt-4 d-flex justify-content-between">
-                                                    <button type="button" class="btn btn-secondary" data-prev-step="2">Previous</button>
-                                                                                <button type="button" class="btn btn-primary" data-next-step="2">Next <i class="fas fa-arrow-right ms-2"></i></button>
-                                                                                                        </div>
-                                                                                                                            </div>
-                                                                                                                            
-                    <div id="step3Form" class="step-form" style="display: none;">
-                                            <div class="row gy-3">
-                                                                        <div class="col-md-6">
-                                                                                                        <label for="passport_data_page" class="form-label">Passport Data Page <span class="text-danger">*</span></label>
-                                                                                                                                        <input id="passport_data_page" name="passport_data_page" type="file" class="form-control @error('passport_data_page') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png" required>
-                                                                                                                                                                        @error('passport_data_page')
-                                                                                                                                                                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                                                            @enderror
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                        
-                            <div class="col-md-6">
-                                                            <label for="entry_visa" class="form-label">Entry Visa <span class="text-danger">*</span></label>
-                                                                                            <input id="entry_visa" name="entry_visa" type="file" class="form-control @error('entry_visa') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png" required>
-                                                                                                                            @error('entry_visa')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="entry_stamp" class="form-label">Entry Stamp <span class="text-danger">*</span></label>
-                                                                                            <input id="entry_stamp" name="entry_stamp" type="file" class="form-control @error('entry_stamp') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png" required>
-                                                                                                                            @error('entry_stamp')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            
-                            <div class="col-md-6">
-                                                            <label for="return_ticket" class="form-label">Return Ticket <span class="text-danger">*</span></label>
-                                                                                            <input id="return_ticket" name="return_ticket" type="file" class="form-control @error('return_ticket') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png" required>
-                                                                                                                            @error('return_ticket')
-                                                                                                                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                                                                                                                                                                @enderror
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    
-                        <div class="mt-4 d-flex justify-content-between">
-                                                    <button type="button" class="btn btn-secondary" data-prev-step="3">Previous</button>
-                                                                                <button type="button" class="btn btn-primary" data-next-step="3">Next <i class="fas fa-arrow-right ms-2"></i></button>
-                                                                                                        </div>
-                                                                                                                            </div>
-                                                                                                                            
-                    <div id="step4Form" class="step-form" style="display: none;">
-                                            <div class="card border-0 shadow-sm">
-                                                                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                                                                                        <div>
-                                                                                                                                            <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Review Your Information</h5>
-                                                                                                                                                                                <small class="text-white-75">Confirm the details below before submitting.</small>
-                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                <span class="badge bg-light text-primary">Step 4 of 4</span>
-                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                        <div class="card-body">
-                                                                                                                                                                                                                                                                                                                                        <div class="row gy-4">
-                                                                                                                                                                                                                                                                                                                                                                            <div class="col-lg-6">
-                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="card h-100 border-secondary">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="card-header bg-light">Personal Information</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="card-body">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-2"><strong>Surname:</strong> <span id="reviewSurname"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-2"><strong>First Name:</strong> <span id="reviewFirstName"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-2"><strong>Other Names:</strong> <span id="reviewOtherNames"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-2"><strong>Passport:</strong> <span id="reviewPassport"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-2"><strong>Nationality:</strong> <span id="reviewNationality"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <p class="mb-0"><strong>Passport Expiry:</strong> <span id="reviewPassportExpiry"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                    <div class="col-lg-6">
-                                                                            <div class="card h-100 border-secondary">
-                                                                                                                        <div class="card-header bg-light">Travel Information</div>
-                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                                                    <p class="mb-2"><strong>Visa Category:</strong> <span id="reviewVisaCategory"></span></p>
-                                                                                                                                                                                                                                                                    <p class="mb-2"><strong>Arrival Date:</strong> <span id="reviewArrivalDate"></span></p>
-                                                                                                                                                                                                                                                                                                                    <p class="mb-2"><strong>Address:</strong> <span id="reviewAddress"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                    <p class="mb-2"><strong>City / State:</strong> <span id="reviewCityState"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                    <p class="mb-0"><strong>Reason:</strong> <span id="reviewApplicantNote"></span></p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                <div class="card mt-4 border-secondary">
-                                                                    <div class="card-header bg-light">Documents Uploaded</div>
-                                                                                                        <div class="card-body">
-                                                                                                                                                <ul class="list-unstyled mb-0">
-                                                                                                                                                                                            <li><i class="fas fa-check-circle text-success me-2"></i>Passport Data Page</li>
-                                                                                                                                                                                                                                        <li><i class="fas fa-check-circle text-success me-2"></i>Entry Visa</li>
-                                                                                                                                                                                                                                                                                    <li><i class="fas fa-check-circle text-success me-2"></i>Entry Stamp</li>
-                                                                                                                                                                                                                                                                                                                                <li><i class="fas fa-check-circle text-success me-2"></i>Return Ticket</li>
-                                                                                                                                                                                                                                                                                                                                                                        </ul>
-                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                        <div class="mt-4 d-flex justify-content-between">
-                                                    <button type="button" class="btn btn-secondary" data-prev-step="4">Edit</button>
-                                                                                <button type="submit" class="btn btn-success">Complete Application</button>
-                                                                                                        </div>
-                                                                                                                            </div>
-                                                                                                                                            </form>
-                                                                                                                                                        </div>
-                                                                                                                                                                </div>
-                                                                                                                                                                    </div>
-                                                                                                                                                                    </main>
-                                                                                                                                                                    
+<div class="dashboard-content">
+
+    {{-- ── Alerts ─────────────────────────────────────────── --}}
+    @if(session('status'))
+        <div class="form-alert form-alert-success" role="alert">
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            {{ session('status') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="form-alert form-alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- ── Page Header ─────────────────────────────────────── --}}
+    <div class="page-header">
+        <h2 class="page-title">New Registration</h2>
+        <p class="page-subtitle">Complete all four steps to submit your application to the Nigeria Immigration Service.</p>
+    </div>
+
+    {{-- ── Wizard Card ─────────────────────────────────────── --}}
+    <div class="content-card app-wizard">
+
+        {{-- ── Step Indicator ──────────────────────────────── --}}
+        <div class="wizard-header">
+            <div class="wizard-steps" role="tablist" aria-label="Application steps">
+
+                <div class="wizard-step active" id="wizStep1"
+                     role="tab" aria-selected="true" aria-controls="panel1">
+                    <div class="wizard-step-circle">
+                        <span class="wizard-step-number" aria-hidden="true">1</span>
+                        <i class="fas fa-check wizard-step-check" aria-hidden="true"></i>
+                    </div>
+                    <div class="wizard-step-label">Biodata</div>
+                </div>
+
+                <div class="wizard-step-connector" aria-hidden="true"></div>
+
+                <div class="wizard-step" id="wizStep2"
+                     role="tab" aria-selected="false" aria-controls="panel2">
+                    <div class="wizard-step-circle">
+                        <span class="wizard-step-number" aria-hidden="true">2</span>
+                        <i class="fas fa-check wizard-step-check" aria-hidden="true"></i>
+                    </div>
+                    <div class="wizard-step-label">Travel Info</div>
+                </div>
+
+                <div class="wizard-step-connector" aria-hidden="true"></div>
+
+                <div class="wizard-step" id="wizStep3"
+                     role="tab" aria-selected="false" aria-controls="panel3">
+                    <div class="wizard-step-circle">
+                        <span class="wizard-step-number" aria-hidden="true">3</span>
+                        <i class="fas fa-check wizard-step-check" aria-hidden="true"></i>
+                    </div>
+                    <div class="wizard-step-label">Documents</div>
+                </div>
+
+                <div class="wizard-step-connector" aria-hidden="true"></div>
+
+                <div class="wizard-step" id="wizStep4"
+                     role="tab" aria-selected="false" aria-controls="panel4">
+                    <div class="wizard-step-circle">
+                        <span class="wizard-step-number" aria-hidden="true">4</span>
+                        <i class="fas fa-check wizard-step-check" aria-hidden="true"></i>
+                    </div>
+                    <div class="wizard-step-label">Review</div>
+                </div>
+
+            </div>
+
+            <div class="wizard-progress-bar"
+                 role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
+                 aria-label="Form completion progress">
+                <div class="wizard-progress-fill" id="wizardProgress" style="width:25%"></div>
+            </div>
+        </div>
+
+        {{-- ── Form ─────────────────────────────────────────── --}}
+        <form id="registrationForm"
+              method="POST"
+              action="{{ route('applications.store') }}"
+              enctype="multipart/form-data"
+              novalidate>
+            @csrf
+
+            {{-- ── Step 1: Biodata ─────────────────────────── --}}
+            <div id="panel1" class="wizard-panel" role="tabpanel" aria-labelledby="wizStep1">
+
+                <div class="wizard-panel-header">
+                    <h3><i class="fas fa-user" aria-hidden="true"></i> Applicant Biodata</h3>
+                    <p>Enter your personal details exactly as they appear on your travel document.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="surname">
+                            Surname <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <input id="surname" name="surname" type="text"
+                               class="field-input @error('surname') field-error @enderror"
+                               placeholder="As on passport" required autocomplete="family-name"
+                               value="{{ old('surname', $prefill['regSurname'] ?? '') }}">
+                        @error('surname')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="first_name">
+                            First Name <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <input id="first_name" name="first_name" type="text"
+                               class="field-input @error('first_name') field-error @enderror"
+                               placeholder="As on passport" required autocomplete="given-name"
+                               value="{{ old('first_name', $prefill['regFirstName'] ?? '') }}">
+                        @error('first_name')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="other_names">
+                            Other Names <span class="field-optional">(optional)</span>
+                        </label>
+                        <input id="other_names" name="other_names" type="text"
+                               class="field-input @error('other_names') field-error @enderror"
+                               placeholder="Middle names, if any" autocomplete="additional-name"
+                               value="{{ old('other_names', $prefill['regOtherNames'] ?? '') }}">
+                        @error('other_names')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="passport_number">
+                            Passport Number <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <input id="passport_number" name="passport_number" type="text"
+                               class="field-input font-mono @error('passport_number') field-error @enderror"
+                               placeholder="e.g. A12345678" required autocomplete="off"
+                               value="{{ old('passport_number', $prefill['regPassport'] ?? '') }}">
+                        @error('passport_number')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nationality">
+                            Nationality <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <select id="nationality" name="nationality"
+                                class="field-input @error('nationality') field-error @enderror"
+                                required>
+                            <option value="">Select nationality</option>
+                            @foreach($nationalities as $nat)
+                                <option value="{{ $nat }}"
+                                    {{ old('nationality', $prefill['regNationality'] ?? '') === $nat ? 'selected' : '' }}>
+                                    {{ $nat }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('nationality')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="passport_expiry">
+                            Passport Expiry Date <span class="field-optional">(optional)</span>
+                        </label>
+                        <input id="passport_expiry" name="passport_expiry" type="date"
+                               class="field-input"
+                               value="{{ old('passport_expiry') }}">
+                    </div>
+                </div>
+
+                <div class="wizard-panel-footer">
+                    <span></span>
+                    <button type="button" class="btn btn-primary wizard-next" data-step="1">
+                        Next <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- ── Step 2: Travel Info ──────────────────────── --}}
+            <div id="panel2" class="wizard-panel" role="tabpanel" aria-labelledby="wizStep2" hidden>
+
+                <div class="wizard-panel-header">
+                    <h3><i class="fas fa-plane" aria-hidden="true"></i> Travel Information</h3>
+                    <p>Provide your visa details and your current address in Nigeria.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="visa_category">
+                            Visa Category <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <select id="visa_category" name="visa_category"
+                                class="field-input @error('visa_category') field-error @enderror"
+                                required>
+                            <option value="">Select category</option>
+                            <option value="SVV" {{ old('visa_category') === 'SVV' ? 'selected' : '' }}>
+                                Short Visit Visa (SVV)
+                            </option>
+                            <option value="TRV" {{ old('visa_category') === 'TRV' ? 'selected' : '' }}>
+                                Temporary Residence Visa (TRV)
+                            </option>
+                        </select>
+                        @error('visa_category')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field" id="svvCategory" hidden>
+                        <label for="svv_subcat">SVV Sub-category</label>
+                        <select id="svv_subcat" name="svv_subcategory" class="field-input">
+                            <option value="">Select type</option>
+                            <option value="F4A" {{ old('svv_subcategory') === 'F4A' ? 'selected' : '' }}>F4A</option>
+                            <option value="F4B" {{ old('svv_subcategory') === 'F4B' ? 'selected' : '' }}>F4B</option>
+                            <option value="F5A" {{ old('svv_subcategory') === 'F5A' ? 'selected' : '' }}>F5A</option>
+                            <option value="F6A" {{ old('svv_subcategory') === 'F6A' ? 'selected' : '' }}>F6A</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field" id="trvCategory" hidden>
+                        <label for="trv_subcat">TRV Sub-category</label>
+                        <select id="trv_subcat" name="trv_subcategory" class="field-input">
+                            <option value="">Select type</option>
+                            <option value="R2A" {{ old('trv_subcategory') === 'R2A' ? 'selected' : '' }}>R2A</option>
+                            <option value="R6A" {{ old('trv_subcategory') === 'R6A' ? 'selected' : '' }}>R6A</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="arrival_date">
+                            Arrival Date in Nigeria <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <input id="arrival_date" name="arrival_date" type="date"
+                               class="field-input @error('arrival_date') field-error @enderror"
+                               required value="{{ old('arrival_date') }}">
+                        @error('arrival_date')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label for="address">
+                            Street Address in Nigeria <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <input id="address" name="address" type="text"
+                               class="field-input @error('address') field-error @enderror"
+                               placeholder="Street address" required autocomplete="street-address"
+                               value="{{ old('address') }}">
+                        @error('address')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="state">
+                            State <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <select id="state" name="state"
+                                class="field-input @error('state') field-error @enderror"
+                                required>
+                            <option value="">Select state</option>
+                        </select>
+                        @error('state')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field">
+                        <label for="city">
+                            City <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <select id="city" name="city"
+                                class="field-input @error('city') field-error @enderror"
+                                required disabled>
+                            <option value="">Select city</option>
+                        </select>
+                        @error('city')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label for="applicant_note">
+                            Reason for Request <span class="field-optional">(optional)</span>
+                        </label>
+                        <select id="applicant_note" name="applicant_note" class="field-input">
+                            <option value="">Select reason</option>
+                            <option value="Flight Cancellation"
+                                {{ old('applicant_note') === 'Flight Cancellation' ? 'selected' : '' }}>
+                                Flight Cancellation
+                            </option>
+                            <option value="Delayed Flight"
+                                {{ old('applicant_note') === 'Delayed Flight' ? 'selected' : '' }}>
+                                Delayed Flight
+                            </option>
+                            <option value="Other"
+                                {{ old('applicant_note') === 'Other' ? 'selected' : '' }}>
+                                Other
+                            </option>
+                        </select>
+                        <span class="field-hint">Optional note sent with your application.</span>
+                    </div>
+
+                    <div class="form-field form-field-full" id="reasonOtherWrapper" hidden>
+                        <label for="reason_other_text">
+                            Please specify <span class="field-required" aria-label="required">*</span>
+                        </label>
+                        <textarea id="reason_other_text" name="reason_other_text"
+                                  class="field-input" rows="3"
+                                  placeholder="Describe your reason in detail">{{ old('reason_other_text') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="wizard-panel-footer">
+                    <button type="button" class="btn btn-outline wizard-prev" data-step="2">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary wizard-next" data-step="2">
+                        Next <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- ── Step 3: Documents ────────────────────────── --}}
+            <div id="panel3" class="wizard-panel" role="tabpanel" aria-labelledby="wizStep3" hidden>
+
+                <div class="wizard-panel-header">
+                    <h3><i class="fas fa-folder-open" aria-hidden="true"></i> Upload Documents</h3>
+                    <p>Upload clear scans or photos of each document. Accepted: PDF, JPG, PNG — max 5 MB each.</p>
+                </div>
+
+                <div class="upload-grid">
+
+                    <div class="upload-field @error('passport_data_page') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Passport Data Page <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="passport_data_page" id="zone_passport_data_page">
+                            <div class="upload-idle">
+                                <i class="fas fa-passport upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_passport_data_page" hidden></div>
+                        </label>
+                        <input id="passport_data_page" name="passport_data_page" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_passport_data_page"
+                               data-preview="preview_passport_data_page"
+                               aria-label="Passport data page file">
+                        @error('passport_data_page')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="upload-field @error('entry_visa') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Entry Visa <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="entry_visa" id="zone_entry_visa">
+                            <div class="upload-idle">
+                                <i class="fas fa-stamp upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_entry_visa" hidden></div>
+                        </label>
+                        <input id="entry_visa" name="entry_visa" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_entry_visa"
+                               data-preview="preview_entry_visa"
+                               aria-label="Entry visa file">
+                        @error('entry_visa')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="upload-field @error('entry_stamp') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Entry Stamp <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="entry_stamp" id="zone_entry_stamp">
+                            <div class="upload-idle">
+                                <i class="fas fa-check-square upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_entry_stamp" hidden></div>
+                        </label>
+                        <input id="entry_stamp" name="entry_stamp" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_entry_stamp"
+                               data-preview="preview_entry_stamp"
+                               aria-label="Entry stamp file">
+                        @error('entry_stamp')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="upload-field @error('return_ticket') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Return Ticket <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="return_ticket" id="zone_return_ticket">
+                            <div class="upload-idle">
+                                <i class="fas fa-ticket-alt upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_return_ticket" hidden></div>
+                        </label>
+                        <input id="return_ticket" name="return_ticket" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_return_ticket"
+                               data-preview="preview_return_ticket"
+                               aria-label="Return ticket file">
+                        @error('return_ticket')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                </div>
+
+                <div class="wizard-panel-footer">
+                    <button type="button" class="btn btn-outline wizard-prev" data-step="3">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary wizard-next" data-step="3">
+                        Next <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{-- ── Step 4: Review ───────────────────────────── --}}
+            <div id="panel4" class="wizard-panel" role="tabpanel" aria-labelledby="wizStep4" hidden>
+
+                <div class="wizard-panel-header">
+                    <h3><i class="fas fa-check-circle" aria-hidden="true"></i> Review &amp; Submit</h3>
+                    <p>Verify all details are correct before submitting. Click <strong>Previous</strong> to go back and make changes.</p>
+                </div>
+
+                <div class="review-grid">
+                    <div class="review-card">
+                        <div class="review-card-title">
+                            <i class="fas fa-user" aria-hidden="true"></i> Personal Information
+                        </div>
+                        <div class="review-rows">
+                            <div class="review-row">
+                                <span class="review-label">Surname</span>
+                                <span class="review-value" id="reviewSurname">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">First Name</span>
+                                <span class="review-value" id="reviewFirstName">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Other Names</span>
+                                <span class="review-value" id="reviewOtherNames">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Passport No.</span>
+                                <span class="review-value font-mono" id="reviewPassport">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Nationality</span>
+                                <span class="review-value" id="reviewNationality">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Passport Expiry</span>
+                                <span class="review-value" id="reviewPassportExpiry">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-card-title">
+                            <i class="fas fa-plane" aria-hidden="true"></i> Travel Information
+                        </div>
+                        <div class="review-rows">
+                            <div class="review-row">
+                                <span class="review-label">Visa Category</span>
+                                <span class="review-value" id="reviewVisaCategory">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Arrival Date</span>
+                                <span class="review-value" id="reviewArrivalDate">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Address</span>
+                                <span class="review-value" id="reviewAddress">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">City / State</span>
+                                <span class="review-value" id="reviewCityState">—</span>
+                            </div>
+                            <div class="review-row">
+                                <span class="review-label">Reason</span>
+                                <span class="review-value" id="reviewApplicantNote">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-card review-card-full">
+                        <div class="review-card-title">
+                            <i class="fas fa-folder-open" aria-hidden="true"></i> Uploaded Documents
+                        </div>
+                        <div class="review-docs" id="reviewDocuments"></div>
+                    </div>
+                </div>
+
+                <div class="notice review-notice">
+                    <div class="notice-icon">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                    </div>
+                    <div class="notice-content">
+                        <p>By submitting this application you confirm all information is truthful and accurate.
+                           Misrepresentation may lead to rejection or legal consequences under Nigerian immigration law.</p>
+                    </div>
+                </div>
+
+                <div class="wizard-panel-footer">
+                    <button type="button" class="btn btn-outline wizard-prev" data-step="4">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Application
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+        </main>
+    </div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-            const stepForms = document.querySelectorAll('.step-form');
-                    const stepIndicatorItems = document.querySelectorAll('.step-indicator .step');
-                            const progressPercentage = document.querySelector('.progress-percentage');
-                                    const visaCategory = document.getElementById('visa_category');
-                                            const svvCategory = document.getElementById('svvCategory');
-                                                    const trvCategory = document.getElementById('trvCategory');
-                                                            const reasonSelect = document.getElementById('applicant_note');
-                                                                    const reasonOtherWrapper = document.getElementById('reasonOtherWrapper');
-                                                                            const reasonOtherText = document.getElementById('reason_other_text');
-                                                                                    const stateEl = document.getElementById('state');
-                                                                                            const cityEl = document.getElementById('city');
-                                                                                                    const oldState = '{{ old('state') }}';
-                                                                                                            const oldCity = '{{ old('city') }}';
-                                                                                                            
-        const updateStep = (index) => {
-                    stepForms.forEach((form, idx) => {
-                                    form.style.display = idx === index ? 'block' : 'none';
-                                                });
-                                                            stepIndicatorItems.forEach((item, idx) => {
-                                                                            item.classList.toggle('active', idx <= index);
-                                                                                        });
-                                                                                                    const progress = Math.round(((index + 1) / stepForms.length) * 100);
-                                                                                                                progressPercentage.textContent = `${progress}%`;
-                                                                                                                        };
-                                                                                                                        
-        const showVisaSubcategory = () => {
-                    const value = visaCategory.value;
-                                svvCategory.style.display = value === 'SVV' ? 'block' : 'none';
-                                            trvCategory.style.display = value === 'TRV' ? 'block' : 'none';
-                                                    };
-                                                    
-        const showReasonExtras = () => {
-                    const value = reasonSelect.value;
-                                if (value === 'Other') {
-                                                reasonOtherWrapper.style.display = 'block';
-                                                                reasonOtherText.required = true;
-                                                                            } else {
-                                                                                            reasonOtherWrapper.style.display = 'none';
-                                                                                                            reasonOtherText.required = false;
-                                                                                                                            reasonOtherText.value = '';
-                                                                                                                                        }
-                                                                                                                                                };
-                                                                                                                                                
-        const loadStatesCities = () => {
-                    fetch('/assets/data/states_cities.json')
-                                    .then(response => response.json())
-                                                    .then(data => {
-                                                                        Object.keys(data).sort().forEach((state) => {
-                                                                                                const option = document.createElement('option');
-                                                                                                                        option.value = state;
-                                                                                                                                                option.textContent = state;
-                                                                                                                                                                        if (state === oldState) {
-                                                                                                                                                                                                    option.selected = true;
-                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                    stateEl.appendChild(option);
-                                                                                                                                                                                                                                                                        });
-                                                                                                                                                                                                                                                                        
-                    if (oldState) {
-                                            updateCityOptions(oldState, data);
-                                                                }
-                                                                                })
-                                                                                                .catch(() => {
-                                                                                                                    console.warn('Could not load states/cities JSON.');
-                                                                                                                                    });
-                                                                                                                                            };
-                                                                                                                                            
-        const updateCityOptions = (state, data) => {
-                    cityEl.innerHTML = '<option value="">Select city</option>';
-                                cityEl.disabled = true;
-                                
-            if (!state || !data || !data[state]) {
-                            return;
-                                        }
-                                        
-            data[state].forEach(city => {
-                            const option = document.createElement('option');
-                                            option.value = city;
-                                                            option.textContent = city;
-                                                                            if (city === oldCity) {
-                                                                                                option.selected = true;
-                                                                                                                }
-                                                                                                                                cityEl.appendChild(option);
-                                                                                                                                            });
-                                                                                                                                            
-            cityEl.disabled = false;
-                    };
-                    
-        const populateReview = () => {
-                    document.getElementById('reviewSurname').textContent = document.getElementById('surname').value ; '';
-                                document.getElementById('reviewFirstName').textContent = document.getElementById('first_name').value ; '';
-                                            document.getElementById('reviewOtherNames').textContent = document.getElementById('other_names').value ; '';
-                                                        document.getElementById('reviewPassport').textContent = document.getElementById('passport_number').value ; '';
-                                                                    document.getElementById('reviewNationality').textContent = document.getElementById('nationality').selectedOptions[0]?.textContent ; '';
-                                                                                document.getElementById('reviewPassportExpiry').textContent = document.getElementById('passport_expiry').value ; '';
-                                                                                            document.getElementById('reviewVisaCategory').textContent = document.getElementById('visa_category').selectedOptions[0]?.textContent ; '';
-                                                                                                        document.getElementById('reviewArrivalDate').textContent = document.getElementById('arrival_date').value ; '';
-                                                                                                                    document.getElementById('reviewAddress').textContent = document.getElementById('address').value ; '';
-                                                                                                                                document.getElementById('reviewCityState').textContent = [document.getElementById('city').value, document.getElementById('state').value].filter(Boolean).join(' / ') ; '';
-                                                                                                                                            document.getElementById('reviewApplicantNote').textContent = document.getElementById('applicant_note').value ; '';
-                                                                                                                                                    };
-                                                                                                                                                    
-        document.querySelectorAll('[data-next-step]').forEach(button => {
-                    button.addEventListener('click', () => {
-                                    const currentStep = Number(button.getAttribute('data-next-step'));
-                                                    const currentForm = document.querySelector(`#step${currentStep}Form`);
-                                                    
-                if (currentForm ; !currentForm.checkValidity()) {
-                                    currentForm.reportValidity();
-                                                        return;
-                                                                        }
-                                                                        
-                const nextIndex = currentStep;
-                                if (nextIndex === 3) {
-                                                    populateReview();
-                                                                    }
-                                                                                    updateStep(nextIndex);
-                                                                                                });
-                                                                                                        });
-                                                                                                        
-        document.querySelectorAll('[data-prev-step]').forEach(button => {
-                    button.addEventListener('click', () => {
-                                    const prevStep = Number(button.getAttribute('data-prev-step')) - 1;
-                                                    updateStep(prevStep);
-                                                                });
-                                                                        });
-                                                                        
-        if (visaCategory) {
-                    showVisaSubcategory();
-                                visaCategory.addEventListener('change', showVisaSubcategory);
-                                        }
-                                        
-        if (reasonSelect) {
-                    showReasonExtras();
-                                reasonSelect.addEventListener('change', showReasonExtras);
-                                        }
-                                        
-        if (stateEl) {
-                    loadStatesCities();
-                                stateEl.addEventListener('change', () => {
-                                                fetch('/assets/data/states_cities.json')
-                                                                    .then(response => response.json())
-                                                                                        .then(data => updateCityOptions(stateEl.value, data));
-                                                                                                    });
-                                                                                                            }
-                                                                                                            
-        updateStep(0);
-            });
-            </script>
-            
+(function () {
+    'use strict';
+
+    var TOTAL_STEPS  = 4;
+    var currentStep  = 0;
+
+    var panels = [
+        document.getElementById('panel1'),
+        document.getElementById('panel2'),
+        document.getElementById('panel3'),
+        document.getElementById('panel4'),
+    ];
+
+    var stepEls = [
+        document.getElementById('wizStep1'),
+        document.getElementById('wizStep2'),
+        document.getElementById('wizStep3'),
+        document.getElementById('wizStep4'),
+    ];
+
+    var progressFill = document.getElementById('wizardProgress');
+    var progressBar  = progressFill ? progressFill.parentElement : null;
+
+    // ── Wizard Navigation ─────────────────────────────────────
+    function goToStep(index) {
+        if (index < 0 || index >= TOTAL_STEPS) return;
+
+        panels.forEach(function (p, i) {
+            if (p) p.hidden = (i !== index);
+        });
+
+        stepEls.forEach(function (s, i) {
+            if (!s) return;
+            s.classList.toggle('active', i === index);
+            s.classList.toggle('completed', i < index);
+            s.setAttribute('aria-selected', i === index ? 'true' : 'false');
+        });
+
+        var pct = Math.round(((index + 1) / TOTAL_STEPS) * 100);
+        if (progressFill) progressFill.style.width = pct + '%';
+        if (progressBar)  progressBar.setAttribute('aria-valuenow', pct);
+
+        currentStep = index;
+
+        var wizard = document.querySelector('.app-wizard');
+        if (wizard) wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function validatePanel(panelEl) {
+        if (!panelEl) return true;
+
+        // Validate all standard (non-file) inputs, selects, textareas inside this panel.
+        // Note: panelEl is a <div>, so checkValidity() must be called on each field individually.
+        var fields = panelEl.querySelectorAll('input:not([type="file"]), select, textarea');
+        for (var i = 0; i < fields.length; i++) {
+            if (!fields[i].checkValidity()) {
+                fields[i].reportValidity();
+                return false;
+            }
+        }
+
+        // File inputs are visually hidden, so reportValidity() won't render a tooltip.
+        // Mark the zone and show a toast instead.
+        var fileInputs = panelEl.querySelectorAll('input[type="file"][required]');
+        var missingFile = false;
+        for (var j = 0; j < fileInputs.length; j++) {
+            var inp = fileInputs[j];
+            if (!inp.files || inp.files.length === 0) {
+                var zoneEl = document.getElementById(inp.getAttribute('data-zone'));
+                if (zoneEl) zoneEl.classList.add('upload-zone-invalid');
+                missingFile = true;
+            }
+        }
+        if (missingFile) {
+            if (window.Dashboard) Dashboard.showToast('Please upload all required documents.', 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Next buttons
+    document.querySelectorAll('.wizard-next').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!validatePanel(panels[currentStep])) return;
+            var next = currentStep + 1;
+            if (next === 3) populateReview();
+            goToStep(next);
+        });
+    });
+
+    // Prev buttons
+    document.querySelectorAll('.wizard-prev').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            goToStep(currentStep - 1);
+        });
+    });
+
+    // ── Visa Category Subcategory Toggle ──────────────────────
+    var visaSelect = document.getElementById('visa_category');
+    var svvField   = document.getElementById('svvCategory');
+    var trvField   = document.getElementById('trvCategory');
+
+    function syncVisaSubcat() {
+        var val = visaSelect ? visaSelect.value : '';
+        if (svvField) svvField.hidden = (val !== 'SVV');
+        if (trvField) trvField.hidden = (val !== 'TRV');
+
+        // Clear subcategory fields when main category changes
+        var svvSubcat = document.getElementById('svv_subcat');
+        var trvSubcat = document.getElementById('trv_subcat');
+        if (val !== 'SVV' && svvSubcat) svvSubcat.selectedIndex = 0;
+        if (val !== 'TRV' && trvSubcat) trvSubcat.selectedIndex = 0;
+    }
+
+    if (visaSelect) {
+        syncVisaSubcat();
+        visaSelect.addEventListener('change', syncVisaSubcat);
+    }
+
+    // ── Reason Other Toggle ───────────────────────────────────
+    var reasonSelect    = document.getElementById('applicant_note');
+    var reasonOtherWrap = document.getElementById('reasonOtherWrapper');
+    var reasonOtherInp  = document.getElementById('reason_other_text');
+
+    function syncReasonOther() {
+        var isOther = reasonSelect && reasonSelect.value === 'Other';
+        if (reasonOtherWrap) reasonOtherWrap.hidden = !isOther;
+        if (reasonOtherInp) {
+            reasonOtherInp.required = isOther;
+            if (!isOther) reasonOtherInp.value = '';
+        }
+    }
+
+    if (reasonSelect) {
+        syncReasonOther();
+        reasonSelect.addEventListener('change', syncReasonOther);
+    }
+
+    // ── States / Cities ───────────────────────────────────────
+    var stateEl    = document.getElementById('state');
+    var cityEl     = document.getElementById('city');
+    var oldState   = @json(old('state', ''));
+    var oldCity    = @json(old('city', ''));
+    var statesData = null;
+
+    function loadStatesCities() {
+        fetch('/assets/data/states_cities.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                statesData = data;
+                Object.keys(data).sort().forEach(function (st) {
+                    var opt = document.createElement('option');
+                    opt.value = st;
+                    opt.textContent = st;
+                    if (st === oldState) opt.selected = true;
+                    stateEl.appendChild(opt);
+                });
+                if (oldState) updateCityOptions(oldState);
+            })
+            .catch(function () { /* silent – state field remains empty */ });
+    }
+
+    function updateCityOptions(state) {
+        cityEl.innerHTML = '<option value="">Select city</option>';
+        cityEl.disabled  = true;
+        if (!state || !statesData || !statesData[state]) return;
+        statesData[state].forEach(function (city) {
+            var opt = document.createElement('option');
+            opt.value = city;
+            opt.textContent = city;
+            if (city === oldCity) opt.selected = true;
+            cityEl.appendChild(opt);
+        });
+        cityEl.disabled = false;
+    }
+
+    if (stateEl) {
+        loadStatesCities();
+        stateEl.addEventListener('change', function () {
+            updateCityOptions(stateEl.value);
+        });
+    }
+
+    // ── File Upload Preview ───────────────────────────────────
+    function formatBytes(bytes) {
+        bytes = parseInt(bytes, 10);
+        if (isNaN(bytes) || bytes === 0) return '';
+        if (bytes < 1024)    return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function showFilePreview(file, zoneEl, previewEl) {
+        while (previewEl.firstChild) previewEl.removeChild(previewEl.firstChild);
+        previewEl.hidden = false;
+
+        var isImage = file.type.startsWith('image/');
+
+        var inner = document.createElement('div');
+        inner.className = 'upload-preview-inner';
+
+        // Thumbnail or PDF icon
+        var thumbWrap = document.createElement('div');
+        thumbWrap.className = 'upload-thumb';
+
+        if (isImage) {
+            var img = document.createElement('img');
+            img.alt = file.name;
+            img.src = URL.createObjectURL(file);
+            img.onload = function () { URL.revokeObjectURL(img.src); };
+            thumbWrap.appendChild(img);
+        } else {
+            var pdfIcon = document.createElement('i');
+            pdfIcon.className = 'fas fa-file-pdf upload-pdf-icon';
+            pdfIcon.setAttribute('aria-hidden', 'true');
+            thumbWrap.appendChild(pdfIcon);
+        }
+
+        // File info
+        var infoEl = document.createElement('div');
+        infoEl.className = 'upload-file-info';
+
+        var nameEl = document.createElement('span');
+        nameEl.className   = 'upload-file-name';
+        nameEl.textContent = file.name;
+
+        var sizeEl = document.createElement('span');
+        sizeEl.className   = 'upload-file-size';
+        sizeEl.textContent = formatBytes(file.size);
+
+        infoEl.appendChild(nameEl);
+        infoEl.appendChild(sizeEl);
+
+        // Clear button
+        var clearBtn = document.createElement('button');
+        clearBtn.type      = 'button';
+        clearBtn.className = 'upload-clear-btn';
+        clearBtn.setAttribute('aria-label', 'Remove file');
+        var xi = document.createElement('i');
+        xi.className = 'fas fa-times';
+        xi.setAttribute('aria-hidden', 'true');
+        clearBtn.appendChild(xi);
+
+        clearBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var inputEl = document.getElementById(zoneEl.getAttribute('for'));
+            if (inputEl) {
+                inputEl.value = '';
+                inputEl.dispatchEvent(new Event('change'));
+            }
+        });
+
+        inner.appendChild(thumbWrap);
+        inner.appendChild(infoEl);
+        inner.appendChild(clearBtn);
+        previewEl.appendChild(inner);
+
+        zoneEl.classList.add('has-file');
+        zoneEl.classList.remove('upload-zone-invalid');
+    }
+
+    function clearFilePreview(zoneEl, previewEl) {
+        while (previewEl.firstChild) previewEl.removeChild(previewEl.firstChild);
+        previewEl.hidden = true;
+        zoneEl.classList.remove('has-file');
+    }
+
+    var ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+
+    document.querySelectorAll('.upload-input').forEach(function (input) {
+        var zoneId    = input.getAttribute('data-zone');
+        var previewId = input.getAttribute('data-preview');
+        var zoneEl    = document.getElementById(zoneId);
+        var previewEl = document.getElementById(previewId);
+        if (!zoneEl || !previewEl) return;
+
+        input.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                showFilePreview(this.files[0], zoneEl, previewEl);
+            } else {
+                clearFilePreview(zoneEl, previewEl);
+            }
+        });
+
+        // Drag-and-drop
+        zoneEl.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            zoneEl.classList.add('drag-over');
+        });
+
+        zoneEl.addEventListener('dragleave', function () {
+            zoneEl.classList.remove('drag-over');
+        });
+
+        zoneEl.addEventListener('drop', function (e) {
+            e.preventDefault();
+            zoneEl.classList.remove('drag-over');
+            var files = e.dataTransfer ? e.dataTransfer.files : null;
+            if (!files || !files[0]) return;
+
+            if (ACCEPTED_TYPES.indexOf(files[0].type) === -1) {
+                if (window.Dashboard) Dashboard.showToast('Please upload a PDF, JPG, or PNG file.', 'error');
+                return;
+            }
+
+            try {
+                var dt = new DataTransfer();
+                dt.items.add(files[0]);
+                input.files = dt.files;
+                input.dispatchEvent(new Event('change'));
+            } catch (err) { /* DataTransfer unsupported in some browsers */ }
+        });
+    });
+
+    // ── Review Population ─────────────────────────────────────
+    function getVal(id) {
+        var el = document.getElementById(id);
+        return el ? (el.value.trim() || '—') : '—';
+    }
+
+    function getSelectedText(selectEl) {
+        if (!selectEl) return '—';
+        var opt = selectEl.options[selectEl.selectedIndex];
+        return (opt && opt.value) ? opt.textContent.trim() : '—';
+    }
+
+    function setReviewText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val || '—';
+    }
+
+    function populateReview() {
+        setReviewText('reviewSurname',       getVal('surname'));
+        setReviewText('reviewFirstName',     getVal('first_name'));
+        setReviewText('reviewOtherNames',    getVal('other_names'));
+        setReviewText('reviewPassport',      getVal('passport_number'));
+        setReviewText('reviewNationality',   getSelectedText(document.getElementById('nationality')));
+        setReviewText('reviewPassportExpiry', getVal('passport_expiry'));
+
+        var visaCat = getSelectedText(document.getElementById('visa_category'));
+        var subCat  = '';
+        if (visaSelect) {
+            if (visaSelect.value === 'SVV') subCat = getSelectedText(document.getElementById('svv_subcat'));
+            if (visaSelect.value === 'TRV') subCat = getSelectedText(document.getElementById('trv_subcat'));
+        }
+        var visaFull = visaCat !== '—' && subCat && subCat !== '—' ? visaCat + ' – ' + subCat : visaCat;
+        setReviewText('reviewVisaCategory', visaFull);
+
+        setReviewText('reviewArrivalDate',   getVal('arrival_date'));
+        setReviewText('reviewAddress',       getVal('address'));
+
+        var city  = getVal('city');
+        var state = getVal('state');
+        var cityState = [city, state].filter(function (v) { return v && v !== '—'; }).join(' / ');
+        setReviewText('reviewCityState', cityState || '—');
+
+        setReviewText('reviewApplicantNote', getSelectedText(document.getElementById('applicant_note')));
+
+        renderReviewDocs();
+    }
+
+    function renderReviewDocs() {
+        var container = document.getElementById('reviewDocuments');
+        if (!container) return;
+        while (container.firstChild) container.removeChild(container.firstChild);
+
+        var fields = [
+            { id: 'passport_data_page', label: 'Passport Data Page' },
+            { id: 'entry_visa',         label: 'Entry Visa'          },
+            { id: 'entry_stamp',        label: 'Entry Stamp'         },
+            { id: 'return_ticket',      label: 'Return Ticket'       },
+        ];
+
+        fields.forEach(function (f) {
+            var input   = document.getElementById(f.id);
+            var hasFile = input && input.files && input.files.length > 0;
+            var file    = hasFile ? input.files[0] : null;
+
+            var row = document.createElement('div');
+            row.className = 'review-doc-row';
+
+            var icon = document.createElement('i');
+            icon.className = hasFile
+                ? 'fas fa-check-circle review-doc-icon review-doc-ok'
+                : 'fas fa-times-circle review-doc-icon review-doc-missing';
+            icon.setAttribute('aria-hidden', 'true');
+
+            var label = document.createElement('span');
+            label.className   = 'review-doc-label';
+            label.textContent = f.label;
+
+            var status = document.createElement('span');
+            status.className   = 'review-doc-status';
+            status.textContent = file ? file.name : 'Not uploaded';
+
+            row.appendChild(icon);
+            row.appendChild(label);
+            row.appendChild(status);
+            container.appendChild(row);
+        });
+    }
+
+    // ── Submit guard ──────────────────────────────────────────
+    var form = document.getElementById('registrationForm');
+    if (form) {
+        form.addEventListener('submit', function () {
+            var btn = document.getElementById('submitBtn');
+            if (btn) {
+                btn.disabled = true;
+                while (btn.firstChild) btn.removeChild(btn.firstChild);
+                var spinner = document.createElement('i');
+                spinner.className = 'fas fa-spinner fa-spin';
+                spinner.setAttribute('aria-hidden', 'true');
+                btn.appendChild(spinner);
+                btn.appendChild(document.createTextNode(' Submitting\u2026'));
+            }
+        });
+    }
+
+    // ── Init ──────────────────────────────────────────────────
+    goToStep(0);
+
+}());
+</script>
+
 @include('partials.footer')

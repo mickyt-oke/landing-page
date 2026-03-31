@@ -62,7 +62,14 @@ class LandingController extends Controller
             ],
         ];
 
-        return view('faq', compact('faqItems'));
+        $path = public_path('assets/data/countries.json');
+        $countries = [];
+
+        if (file_exists($path)) {
+            $countries = json_decode(file_get_contents($path), true) ?: [];
+        }
+
+        return view('faq', compact('faqItems' , 'countries'));
     }
 
     public function login(LoginRequest $request): RedirectResponse
@@ -88,7 +95,12 @@ class LandingController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma'        => 'no-cache',
+                'Expires'       => '0',
+            ]);
     }
     public function register(RegisterRequest $request): RedirectResponse
     {

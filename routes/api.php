@@ -24,12 +24,17 @@ Route::prefix('auth')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('update-profile', [AuthController::class, 'updateProfile']);
+        Route::post('change-password', [AuthController::class, 'changePassword']);
     });
 
-// status check api route (optional)
-    Route::post('status', function () {
-        return response()->json(['status' => 'ok']);
-    })->middleware('auth:api');
+// status check route (/api/status/check)
+    Route::get('status/check', function () {
+        return response()->json(['status' => 'API is working']);
+    });
+    Route::post('status/check', function () {
+        return response()->json(['status' => 'API is working']);
+    });
     
 
 // other API routes (e.g. applications, admin actions) would go here, protected by auth:api middleware as needed

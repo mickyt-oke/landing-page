@@ -25,6 +25,7 @@ class ApplicationController extends Controller
         if (file_exists($nationalitiesPath)) {
             $nationalities = json_decode(file_get_contents($nationalitiesPath), true) ?: [];
         }
+        
 
         $prefill = [
             'regSurname' => old('surname', $user->surname),
@@ -52,7 +53,7 @@ class ApplicationController extends Controller
                 'application_reference' => $this->makeReference(),
                 'ack_ref_number' => $this->makeReference(),
                 'submitted_at' => now(),
-                'full_name' => $validated['full_name'],
+                'full_name' => $validated['surname'].' '.$validated['first_name'].' '.$validated['other_names'],
                 'passport_number' => $validated['passport_number'],
                 'nationality' => $validated['nationality'],
                 'visa_category' => $validated['visa_category'],

@@ -158,13 +158,15 @@
                         </button>
                         
                         <div class="dropdown-content" style="right: 0; top: 100%; margin-top: 0.5rem;">
-                            <a href="#profile"><i class="fas fa-user"></i> My Profile</a>
-                            <div style="border-top: 1px solid var(--gray-light); margin: 0.5rem 0;"></div>
-                            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                            <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                            <!-- logout form -->
+                            <div class="dropdown-divider"></div>
+                            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                                 @csrf
-                                <button type="submit" class="submit-btn" style="color: var(--accent); border:none; background:none; padding:0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                <button type="submit" style="width: 100%; text-align: left; padding: 0.5rem 2rem; background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
                             </form>
-                        </div>
                     </div>
                 </div>
             </header>

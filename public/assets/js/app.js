@@ -22,8 +22,17 @@
   const trvCategory = document.getElementById('trvCategory');
 
   // ===== INITIALIZATION =====
+  // Handle broken images via capture-phase delegation (runs before DOMContentLoaded)
+  document.addEventListener('error', function(e) {
+    if (e.target.tagName === 'IMG' && e.target.hasAttribute('data-img-fallback')) {
+      e.target.style.display = 'none';
+    }
+  }, true);
+
   document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
+    initBanners();
+    initFlashMeta();
   });
 
   // ===== EVENT LISTENERS =====
@@ -637,30 +646,59 @@
   }
 
   function showAlert(message, type = 'error') {
-    // lightweight toast/notification system
+    // If dashboard.js showToast is available, delegate to it for consistent styling
+    if (window.Dashboard && typeof window.Dashboard.showToast === 'function') {
+      window.Dashboard.showToast(message, type);
+      return;
+    }
+
     let container = document.getElementById('toastContainer');
     if (!container) {
       container = document.createElement('div');
       container.id = 'toastContainer';
-      container.style.position = 'fixed';
-      container.style.top = '1rem';
-      container.style.right = '1rem';
-      container.style.zIndex = '10000';
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.gap = '0.5rem';
+      container.className = 'toast-container';
+      container.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:10000;display:flex;flex-direction:column;gap:0.5rem;';
       document.body.appendChild(container);
     }
 
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+
     const toast = document.createElement('div');
     toast.className = 'toast ' + type;
-    toast.textContent = message;
+
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'toast-icon';
+    const iconEl = document.createElement('i');
+    iconEl.className = 'fas ' + (icons[type] || icons.info);
+    iconDiv.appendChild(iconEl);
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'toast-content';
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'toast-title';
+    titleDiv.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'toast-message';
+    msgDiv.textContent = message;
+    contentDiv.appendChild(titleDiv);
+    contentDiv.appendChild(msgDiv);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Dismiss');
+    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    closeBtn.addEventListener('click', () => toast.remove());
+
+    toast.appendChild(iconDiv);
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
     container.appendChild(toast);
 
     setTimeout(() => {
       toast.classList.add('fade-out');
       toast.addEventListener('transitionend', () => toast.remove());
-    }, 3500);
+    }, 4500);
   }
 
   function updateHeaderShadow() {
@@ -819,13 +857,81 @@
     resultEl.style.display = 'block';
   }
 
-  // Expose functions to window if needed for debugging
+  // ===== WELCOME + CONSENT BANNERS =====
+  function initBanners() {
+    const welcomeBanner = document.getElementById('welcomeBanner');
+    const welcomeClose  = document.getElementById('welcomeClose');
+
+    if (welcomeBanner && welcomeClose) {
+      welcomeClose.addEventListener('click', function() {
+        welcomeBanner.classList.add('hidden');
+        const consentBanner = document.getElementById('consentBanner');
+        if (consentBanner && localStorage.getItem('nis_consent') !== 'accepted') {
+          consentBanner.classList.remove('hidden');
+        }
+      });
+
+      welcomeBanner.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') welcomeClose.click();
+      });
+
+      welcomeClose.focus();
+    }
+
+    const consentBanner  = document.getElementById('consentBanner');
+    const consentAccept  = document.getElementById('consentAccept');
+    const consentDecline = document.getElementById('consentDecline');
+
+    if (consentAccept) {
+      consentAccept.addEventListener('click', function() {
+        localStorage.setItem('nis_consent', 'accepted');
+        consentBanner.classList.add('hidden');
+      });
+    }
+
+    if (consentDecline) {
+      consentDecline.addEventListener('click', function() {
+        consentBanner.classList.add('hidden');
+        showAlert('You must agree to the data notice to use this portal.', 'error');
+      });
+    }
+  }
+
+  // ===== LOGOUT DELEGATION =====
+  // Handles <a data-action="logout" data-form="..."> without inline onclick
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('[data-action="logout"]');
+    if (!link) return;
+    e.preventDefault();
+    const formId = link.dataset.form;
+    const form   = formId ? document.getElementById(formId) : null;
+    if (form) form.submit();
+  });
+
+  // ===== FLASH MESSAGES VIA META TAGS =====
+  // Reads <meta name="flash-success|flash-error"> placed by Blade
+  // instead of injecting inline <script> blocks (CSP-safe)
+  function initFlashMeta() {
+    const success = document.querySelector('meta[name="flash-success"]');
+    const error   = document.querySelector('meta[name="flash-error"]');
+    if (success && success.content) showAlert(success.content, 'success');
+    if (error   && error.content)   showAlert(error.content,   'error');
+  }
+
+  // Expose functions to window
   window.AppPortal = {
     openModal,
     closeAllModals,
     showStep,
     nextStep,
-    prevStep
+    prevStep,
+    showAlert
   };
+
+  // Flush any flash messages queued before this script ran
+  if (Array.isArray(window.__flash)) {
+    window.__flash.forEach(function(f) { showAlert(f.msg, f.type || 'error'); });
+    window.__flash = [];
+  }
 
 })();

@@ -2,23 +2,20 @@
 
 <div class="dashboard-content">
 
-    {{-- ── Alerts ─────────────────────────────────────────── --}}
+    {{-- ── Flash messages delivered as AJAX toasts ────────── --}}
     @if(session('status'))
-        <div class="form-alert form-alert-success" role="alert">
-            <i class="fas fa-check-circle" aria-hidden="true"></i>
-            {{ session('status') }}
-        </div>
+        <script>window.__flash = window.__flash || []; window.__flash.push({msg: {{ Js::from((string) session('status')) }}, type: 'success'});</script>
     @endif
-
+    @if(session('success'))
+        <script>window.__flash = window.__flash || []; window.__flash.push({msg: {{ Js::from((string) session('success')) }}, type: 'success'});</script>
+    @endif
+    @if(session('error'))
+        <script>window.__flash = window.__flash || []; window.__flash.push({msg: {{ Js::from((string) session('error')) }}, type: 'error'});</script>
+    @endif
     @if($errors->any())
-        <div class="form-alert form-alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+        @foreach($errors->all() as $error)
+                <script>window.__flash = window.__flash || []; window.__flash.push({msg: {{ Js::from((string) $error) }}, type: 'error'});</script>
+        @endforeach
     @endif
 
     {{-- ── Page Header ─────────────────────────────────────── --}}
@@ -160,7 +157,8 @@
                         </label>
                         <select id="nationality" name="nationality"
                                 class="field-input @error('nationality') field-error @enderror"
-                                required>
+                                required tabindex="0"
+                                aria-describedby="nationalityHelp @error('nationality') nationalityError @enderror">
                             <option value="">Select nationality</option>
                             @foreach($nationalities as $nat)
                                 <option value="{{ $nat }}"
@@ -169,8 +167,9 @@
                                 </option>
                             @endforeach
                         </select>
+                        <span id="nationalityHelp" class="field-hint">Select your nationality as shown on your passport.</span>
                         @error('nationality')
-                            <span class="field-msg" role="alert">{{ $message }}</span>
+                            <span id="nationalityError" class="field-msg" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -225,6 +224,8 @@
                         <label for="svv_subcat">SVV Sub-category</label>
                         <select id="svv_subcat" name="svv_subcategory" class="field-input">
                             <option value="">Select type</option>
+                            <option value="F2A" {{ old('svv_subcategory') === 'F2A' ? 'selected' : '' }}>F2A</option>
+                            <option value="F3A" {{ old('svv_subcategory') === 'F3A' ? 'selected' : '' }}>F3A</option>
                             <option value="F4A" {{ old('svv_subcategory') === 'F4A' ? 'selected' : '' }}>F4A</option>
                             <option value="F4B" {{ old('svv_subcategory') === 'F4B' ? 'selected' : '' }}>F4B</option>
                             <option value="F5A" {{ old('svv_subcategory') === 'F5A' ? 'selected' : '' }}>F5A</option>
@@ -345,7 +346,7 @@
                 </div>
 
                 <div class="upload-grid">
-
+                <!--PASSPORT DATA PAGE -->
                     <div class="upload-field @error('passport_data_page') upload-field-error @enderror">
                         <div class="upload-label">
                             Passport Data Page <span class="field-required" aria-label="required">*</span>
@@ -367,7 +368,33 @@
                             <span class="field-msg" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
+                    <!-- END PASSPORT DATA PAGE -->
 
+                    <!-- PASSPORT PHOTO -->
+                    <div class="upload-field @error('passport_photo') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Passport Photo <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="passport_photo" id="zone_passport_photo">
+                            <div class="upload-idle">
+                                <i class="fas fa-image upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_passport_photo" hidden></div>
+                        </label>
+                        <input id="passport_photo" name="passport_photo" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_passport_photo"
+                               data-preview="preview_passport_photo"
+                               aria-label="Passport photo file">
+                        @error('passport_photo')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror   
+                    </div>
+                    <!-- END OF PASSPORT PHOTO -->
+
+                    <!--ENTRY VISA -->
                     <div class="upload-field @error('entry_visa') upload-field-error @enderror">
                         <div class="upload-label">
                             Entry Visa <span class="field-required" aria-label="required">*</span>
@@ -389,7 +416,9 @@
                             <span class="field-msg" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
+                    <!-- END OF ENTRY VISA -->
 
+                    <!-- ENTRY STAMP -->
                     <div class="upload-field @error('entry_stamp') upload-field-error @enderror">
                         <div class="upload-label">
                             Entry Stamp <span class="field-required" aria-label="required">*</span>
@@ -411,7 +440,9 @@
                             <span class="field-msg" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
+                    <!-- END OF ENTRY STAMP -->
 
+                    <!-- RETURN TICKET -->
                     <div class="upload-field @error('return_ticket') upload-field-error @enderror">
                         <div class="upload-label">
                             Return Ticket <span class="field-required" aria-label="required">*</span>
@@ -433,6 +464,32 @@
                             <span class="field-msg" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
+                    <!-- END OF RETURN TICKET -->
+
+                    <!-- PROOF OF CANCELLATION OF FLIGHT -->
+                    <div class="upload-field @error('flight_cancellation') upload-field-error @enderror">
+                        <div class="upload-label">
+                            Proof of Flight Cancellation <span class="field-required" aria-label="required">*</span>
+                        </div>
+                        <label class="upload-zone" for="flight_cancellation" id="zone_flight_cancellation">
+                            <div class="upload-idle">
+                                <i class="fas fa-file-alt upload-icon" aria-hidden="true"></i>
+                                <span class="upload-cta">Click or drag to upload</span>
+                                <span class="upload-hint">PDF · JPG · PNG</span>
+                            </div>
+                            <div class="upload-preview" id="preview_flight_cancellation" hidden></div>
+                        </label>
+                        <input id="flight_cancellation" name="flight_cancellation" type="file"
+                               class="upload-input" accept=".pdf,.jpg,.jpeg,.png" required
+                               data-zone="zone_flight_cancellation"
+                               data-preview="preview_flight_cancellation"
+                               aria-label="Proof of flight cancellation file">
+                        @error('flight_cancellation')
+                            <span class="field-msg" role="alert">{{ $message }}</span>
+                        @enderror
+                        <span class="field-hint">E.g. cancellation email from airline, screenshot of cancelled booking, etc.</span>
+                        </div>
+                    <!-- END OF PROOF OF CANCELLATION OF FLIGHT -->
 
                 </div>
 
@@ -547,8 +604,6 @@
     </div>
 
 </div>
-        </main>
-    </div>
 
 <script>
 (function () {
@@ -923,6 +978,8 @@
             { id: 'entry_visa',         label: 'Entry Visa'          },
             { id: 'entry_stamp',        label: 'Entry Stamp'         },
             { id: 'return_ticket',      label: 'Return Ticket'       },
+            { id: 'passport_photo',        label: 'Passport Photo'      },
+            { id: 'flight_cancellation', label: 'Proof of Flight Cancellation' },
         ];
 
         fields.forEach(function (f) {

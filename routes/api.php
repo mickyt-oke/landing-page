@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Models\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -18,8 +20,6 @@ Route::prefix('auth')->group(function () {
         ], 405);
     });
 
-// authentication routes
-
     Route::middleware('auth:api')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::post('logout', [AuthController::class, 'logout']);
@@ -28,20 +28,43 @@ Route::prefix('auth')->group(function () {
         Route::post('change-password', [AuthController::class, 'changePassword']);
     });
 
-// status check route (/api/status/check)
-    Route::get('status/check', function () {
-        return response()->json(['status' => 'API is working']);
-    });
-    Route::post('status/check', function () {
-        return response()->json(['status' => 'API is working']);
-    });
-    
-
-// other API routes (e.g. applications, admin actions) would go here, protected by auth:api middleware as needed
+    // other API routes (e.g. applications, admin actions) would go here, protected by auth:api middleware as needed
     Route::middleware('auth:api')->group(function () {
-        // Example protected route
         Route::get('protected', function () {
             return response()->json(['message' => 'You are authenticated.']);
         });
     });
 });
+
+// Public status check route — POST /api/status/check
+Route::post('status/check', function (Request $request) {
+    $reference      = $request->input('reference');
+    $passportNumber = $request->input('passport_number');
+
+    if (!$reference && !$passportNumber) {
+        return response()->json(['message' => 'Please provide a reference number or passport number.'], 422);
+    }
+
+    $query = Application::query();
+
+    if ($reference) {
+        $query->where('application_reference', $reference)
+              ->orWhere('ack_ref_number', $reference);
+    } elseif ($passportNumber) {
+        $query->where('passport_number', $passportNumber);
+    }
+
+    $application = $query->latest()->first();
+
+    if (!$application) {
+        return response()->json(['message' => 'No application found for the details provided.'], 404);
+    }
+
+    return response()->json([
+        'status'     => $application->status,
+        'name'       => $application->full_name,
+        'reference'  => $application->application_reference,
+        'created_at' => $application->submitted_at?->format('d M Y') ?? $application->created_at->format('d M Y'),
+        'updated_at' => $application->updated_at->format('d M Y'),
+    ]);
+})->middleware('throttle:10,1');

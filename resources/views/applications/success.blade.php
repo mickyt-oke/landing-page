@@ -73,49 +73,7 @@
         </div>
 
         {{-- ── Progress tracker ─────────────────────────────────────── --}}
-        <div class="content-card" style="margin-bottom: 1.5rem !important;">
-            <div class="card-body" style="padding: 1rem 1.5rem;">
-                <div class="d-flex" role="list" aria-label="Application progress steps">
-                    @php
-                        $progressSteps = [
-                            ['icon' => 'fa-file-alt',      'label' => 'Submitted',    'active' => true],
-                            ['icon' => 'fa-search',         'label' => 'Under Review', 'active' => false],
-                            ['icon' => 'fa-clipboard-check','label' => 'Decision',     'active' => false],
-                            ['icon' => 'fa-check-double',   'label' => 'Completed',    'active' => false],
-                        ];
-                    @endphp
-                    @foreach($progressSteps as $i => $step)
-                        <div class="flex-fill text-center position-relative" role="listitem"
-                             aria-current="{{ $step['active'] ? 'step' : false }}">
-                            {{-- connector line --}}
-                            @if($i > 0)
-                                <div class="position-absolute top-50 start-0 translate-middle-y"
-                                     style="height: 2px; width: 50%; background: {{ $step['active'] ? 'var(--primary)' : 'var(--gray-light)' }};"
-                                     aria-hidden="true"></div>
-                            @endif
-                            @if($i < count($progressSteps) - 1)
-                                <div class="position-absolute top-50 end-0 translate-middle-y"
-                                     style="height: 2px; width: 50%; background: var(--gray-light);"
-                                     aria-hidden="true"></div>
-                            @endif
-                            {{-- step icon --}}
-                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle position-relative"
-                                 style="width: 40px; height: 40px;
-                                        background: {{ $step['active'] ? 'var(--primary)' : 'var(--gray-light)' }};
-                                        color: {{ $step['active'] ? '#fff' : 'var(--gray)' }};
-                                        margin-bottom: 0.4rem;"
-                                 aria-hidden="true">
-                                <i class="fas {{ $step['icon'] }} small"></i>
-                            </div>
-                            <div class="small fw-{{ $step['active'] ? 'semibold' : 'normal' }}"
-                                 style="color: {{ $step['active'] ? 'var(--dark)' : 'var(--gray)' }}; font-size: 0.72rem;">
-                                {{ $step['label'] }}
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
+        
 
         {{-- ── Details + Next steps ─────────────────────────────────── --}}
         <div class="row g-4 mb-0" style="margin-bottom: 1.5rem !important;">
@@ -210,9 +168,9 @@
                     <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>Full Version
                 </a>
             </div>
-            <div class="card-body" style="background: var(--light);">
+            {{-- <div class="card-body" style="background: var(--light);">
                 @include('partials.acknowledgement', ['application' => $application, 'isStandalone' => false])
-            </div>
+            </div> --}}
         </section>
 
         {{-- ── Footer navigation ────────────────────────────────────── --}}

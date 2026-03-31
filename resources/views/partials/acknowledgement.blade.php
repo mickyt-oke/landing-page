@@ -19,15 +19,15 @@
         </div>
     @endif
 
-    <div class="nis-header">
-        <img src="{{ asset('assets/images/nis-logo.png') }}" alt="NIS Logo" style="height: 60px; margin-bottom: 0.5rem;">
+    <div class="">
+        <img src="{{ asset('assets/images/nis-logo-2.png') }}" alt="NIS Logo" style="height: 60px; margin-bottom: 0.5rem;">
         <h2>Nigeria Immigration Service</h2>
-        <p>Migrant Overstay Clearance Portal</p>
+        <p>Foreigners Registration Portal</p>
     </div>
 
     <div class="p-5 border">
         <div class="text-center mb-4">
-            <h1 class="mb-2">APPLICATION ACKNOWLEDGEMENT</h1>
+            <h4 class="mb-2">APPLICATION ACKNOWLEDGEMENT</h4>
             <div class="ref-badge d-inline-block mb-3">
                 Reference Number: {{ $application->ack_ref_number ?? 'N/A' }}
             </div>
@@ -36,7 +36,7 @@
 
         <div class="row">
             <div class="col-md-6">
-                <h4>Applicant Details</h4>
+                <h4>Personal Details</h4>
                 <table class="table table-borderless">
                     <tr><td><strong>Full Name:</strong></td><td>{{ $application->full_name }}</td></tr>
                     <tr><td><strong>Passport No:</strong></td><td>{{ $application->passport_number }}</td></tr>
@@ -44,6 +44,7 @@
                     <tr><td><strong>Visa Category:</strong></td><td>{{ $application->visa_category }}</td></tr>
                 </table>
             </div>
+            <div class="hr d-md-none my-4"></div>
             <div class="col-md-6">
                 <h4>Application Details</h4>
                 <table class="table table-borderless">

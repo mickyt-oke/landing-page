@@ -68,7 +68,7 @@
           <i class="fas fa-user-plus" aria-hidden="true"></i> Proceed to Register
         </a>
         <button class="close-modal btn-outline-secondary">
-          Close
+          X
         </button>
       </div>
     </div>

@@ -19,11 +19,12 @@ class ApplicationController extends Controller
         /** @var \App\Models\User $user */
         $user = request()->user();
 
-        $nationalitiesPath = public_path('assets/data/nationalities.json');
+        $nationalitiesPath = public_path('assets/data/countries.json');
         $nationalities = [];
 
         if (file_exists($nationalitiesPath)) {
-            $nationalities = json_decode(file_get_contents($nationalitiesPath), true) ?: [];
+            $decoded = json_decode(file_get_contents($nationalitiesPath), true) ?: [];
+            $nationalities = array_column($decoded, 'name');
         }
         
 

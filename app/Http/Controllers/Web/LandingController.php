@@ -95,12 +95,7 @@ class LandingController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')
-            ->withHeaders([
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma'        => 'no-cache',
-                'Expires'       => '0',
-            ]);
+        return redirect('/');
     }
     public function register(RegisterRequest $request): RedirectResponse
     {

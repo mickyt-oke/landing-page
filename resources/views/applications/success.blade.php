@@ -1,99 +1,70 @@
 @include('partials.header')
 
-<main class="dashboard-content px-3 py-4" id="main-content" aria-label="Application submission success">
-    <div class="container-fluid" style="max-width: 1200px;">
+<main class="dashboard-content" id="main-content" aria-label="Application submission confirmation">
+    <div style="max-width: 1100px;">
 
-        {{-- Flash alert --}}
+        {{-- Flash status alert --}}
         @if(session('status'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" aria-live="polite">
+            <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert" aria-live="polite" aria-atomic="true">
                 <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
                 {{ session('status') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss notification"></button>
             </div>
         @endif
 
-        {{-- Success Banner --}}
-        <div class="rounded-3 overflow-hidden shadow mb-4" style="background: linear-gradient(135deg, var(--primary-dark, #145A32) 0%, var(--primary, #1E8449) 100%);">
-            <div class="p-4 p-md-5 text-white">
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-4">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <span class="d-flex align-items-center justify-content-center rounded-circle bg-white"
-                                  style="width: 40px; height: 40px; min-width: 40px;" aria-hidden="true">
-                                <i class="fas fa-check text-success fs-5"></i>
-                            </span>
-                            <span class="badge text-success fw-semibold px-3 py-2"
-                                  style="background: rgba(255,255,255,0.9); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase;">
-                                Submission Successful
-                            </span>
-                        </div>
-                        <h1 class="h3 fw-bold mb-2">Your application has been submitted</h1>
-                        <p class="mb-0" style="color: rgba(255,255,255,0.75); max-width: 480px;">
-                            Your overstay clearance application is now under review.
-                            Save your reference numbers and download your acknowledgement slip.
-                        </p>
-                    </div>
-
-                    {{-- Reference card --}}
-                    <div class="bg-white text-dark rounded-3 shadow-sm p-3 p-md-4 text-center"
-                         style="min-width: 200px;" aria-label="Application reference number">
-                        <div class="small text-muted text-uppercase fw-semibold mb-1" style="letter-spacing: 0.06em;">
-                            Application Reference
-                        </div>
-                        <div class="fw-bold font-monospace" style="font-size: 1.4rem; color: var(--primary, #1E8449);">
-                            {{ $application->application_reference }}
-                        </div>
-                        <div class="mt-2">
-                            <span class="badge bg-warning text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.04em;">
-                                {{ str_replace('_', ' ', $application->status) }}
-                            </span>
-                        </div>
-                    </div>
+        {{-- ── Page header ─────────────────────────────────────────── --}}
+        <div class="page-header">
+            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
+                <div>
+                    <h1 class="page-title mb-1">
+                        <i class="fas fa-check-circle me-2" style="color: var(--primary);" aria-hidden="true"></i>
+                        Submission Confirmed
+                    </h1>
+                    <p class="page-subtitle mb-0">
+                        Your overstay clearance application has been received and is under review.
+                    </p>
                 </div>
-            </div>
-
-            {{-- Progress strip --}}
-            <div class="d-flex border-top border-white border-opacity-25" style="background: rgba(0,0,0,0.15);" aria-label="Application progress">
-                @php
-                    $steps = [
-                        ['icon' => 'fa-file-alt',     'label' => 'Submitted',  'done' => true],
-                        ['icon' => 'fa-search',        'label' => 'Under Review','done' => false],
-                        ['icon' => 'fa-clipboard-check','label' => 'Decision',  'done' => false],
-                        ['icon' => 'fa-check-double',  'label' => 'Completed',  'done' => false],
-                    ];
-                @endphp
-                @foreach($steps as $i => $step)
-                    <div class="flex-fill text-center py-3 px-2 {{ $i < count($steps) - 1 ? 'border-end border-white border-opacity-25' : '' }}">
-                        <i class="fas {{ $step['icon'] }} mb-1 d-block"
-                           style="color: {{ $step['done'] ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.45)' }}; font-size: 1rem;"
-                           aria-hidden="true"></i>
-                        <small class="fw-{{ $step['done'] ? 'semibold' : 'normal' }}"
-                               style="color: {{ $step['done'] ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.5)' }}; font-size: 0.72rem;">
-                            {{ $step['label'] }}
-                        </small>
-                    </div>
-                @endforeach
+                <span class="status-badge {{ $application->status }}" role="status"
+                      aria-label="Application status: {{ str_replace('_', ' ', $application->status) }}">
+                    {{ ucwords(str_replace('_', ' ', $application->status)) }}
+                </span>
             </div>
         </div>
 
-        {{-- Primary action bar --}}
-        <div class="card border-0 shadow-sm mb-4" style="border-left: 4px solid var(--primary, #1E8449) !important;">
-            <div class="card-body p-3 p-md-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                    <div>
-                        <h2 class="h6 fw-bold mb-1">Download Your Acknowledgement Slip</h2>
-                        <p class="mb-0 small text-muted">Official confirmation of your submission — required for tracking and support.</p>
+        {{-- ── Reference + action strip ─────────────────────────────── --}}
+        <div class="content-card mb-0" style="margin-bottom: 1.5rem !important;">
+            <div class="card-body" style="padding: 1.5rem;">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-4">
+
+                    {{-- Reference numbers --}}
+                    <div class="d-flex flex-column flex-sm-row gap-4">
+                        <div>
+                            <p class="mb-1 small fw-semibold text-uppercase"
+                               style="color: var(--gray); letter-spacing: 0.06em;">Application Reference</p>
+                            <p class="mb-0 fw-bold font-monospace" style="font-size: 1.3rem; color: var(--dark);">
+                                {{ $application->application_reference }}
+                            </p>
+                        </div>
+                        <div style="border-left: 1px solid var(--gray-light);" class="d-none d-sm-block ps-4">
+                            <p class="mb-1 small fw-semibold text-uppercase"
+                               style="color: var(--gray); letter-spacing: 0.06em;">Acknowledgement Ref</p>
+                            <p class="mb-0 fw-bold font-monospace" style="font-size: 1.3rem; color: var(--dark);">
+                                {{ $application->ack_ref_number }}
+                            </p>
+                        </div>
                     </div>
+
+                    {{-- Primary actions --}}
                     <div class="d-flex flex-column flex-sm-row gap-2 flex-shrink-0">
                         <a href="{{ route('applications.acknowledgement', $application) }}"
                            class="btn btn-primary"
-                           aria-label="Generate and download acknowledgement slip for application {{ $application->application_reference }}">
-                            <i class="fas fa-file-download me-2" aria-hidden="true"></i>Download Acknowledgement
+                           aria-label="Download acknowledgement slip for application {{ $application->application_reference }}">
+                            <i class="fas fa-file-download me-2" aria-hidden="true"></i>Download Slip
                         </a>
                         <a href="{{ route('applications.acknowledgement', $application) }}"
                            class="btn btn-outline-secondary"
                            target="_blank" rel="noopener noreferrer"
-                           aria-label="Open printable version of acknowledgement slip">
+                           aria-label="Open printable acknowledgement slip in a new tab">
                             <i class="fas fa-print me-2" aria-hidden="true"></i>Print Version
                         </a>
                     </div>
@@ -101,29 +72,81 @@
             </div>
         </div>
 
-        {{-- Info grid --}}
-        <div class="row g-4 mb-4">
+        {{-- ── Progress tracker ─────────────────────────────────────── --}}
+        <div class="content-card" style="margin-bottom: 1.5rem !important;">
+            <div class="card-body" style="padding: 1rem 1.5rem;">
+                <div class="d-flex" role="list" aria-label="Application progress steps">
+                    @php
+                        $progressSteps = [
+                            ['icon' => 'fa-file-alt',      'label' => 'Submitted',    'active' => true],
+                            ['icon' => 'fa-search',         'label' => 'Under Review', 'active' => false],
+                            ['icon' => 'fa-clipboard-check','label' => 'Decision',     'active' => false],
+                            ['icon' => 'fa-check-double',   'label' => 'Completed',    'active' => false],
+                        ];
+                    @endphp
+                    @foreach($progressSteps as $i => $step)
+                        <div class="flex-fill text-center position-relative" role="listitem"
+                             aria-current="{{ $step['active'] ? 'step' : false }}">
+                            {{-- connector line --}}
+                            @if($i > 0)
+                                <div class="position-absolute top-50 start-0 translate-middle-y"
+                                     style="height: 2px; width: 50%; background: {{ $step['active'] ? 'var(--primary)' : 'var(--gray-light)' }};"
+                                     aria-hidden="true"></div>
+                            @endif
+                            @if($i < count($progressSteps) - 1)
+                                <div class="position-absolute top-50 end-0 translate-middle-y"
+                                     style="height: 2px; width: 50%; background: var(--gray-light);"
+                                     aria-hidden="true"></div>
+                            @endif
+                            {{-- step icon --}}
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle position-relative"
+                                 style="width: 40px; height: 40px;
+                                        background: {{ $step['active'] ? 'var(--primary)' : 'var(--gray-light)' }};
+                                        color: {{ $step['active'] ? '#fff' : 'var(--gray)' }};
+                                        margin-bottom: 0.4rem;"
+                                 aria-hidden="true">
+                                <i class="fas {{ $step['icon'] }} small"></i>
+                            </div>
+                            <div class="small fw-{{ $step['active'] ? 'semibold' : 'normal' }}"
+                                 style="color: {{ $step['active'] ? 'var(--dark)' : 'var(--gray)' }}; font-size: 0.72rem;">
+                                {{ $step['label'] }}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- ── Details + Next steps ─────────────────────────────────── --}}
+        <div class="row g-4 mb-0" style="margin-bottom: 1.5rem !important;">
 
             {{-- Submission details --}}
             <div class="col-lg-5">
-                <section class="card border-0 shadow-sm h-100" aria-labelledby="submission-details-heading">
-                    <div class="card-header bg-light border-bottom fw-semibold py-3" id="submission-details-heading">
-                        <i class="fas fa-id-card me-2 text-muted" aria-hidden="true"></i>Submission Details
+                <section class="content-card h-100 mb-0" aria-labelledby="details-heading">
+                    <div class="card-header">
+                        <h2 class="card-title" id="details-heading" style="font-size: 1rem;">
+                            <i class="fas fa-id-card me-2" style="color: var(--primary);" aria-hidden="true"></i>
+                            Submission Details
+                        </h2>
                     </div>
                     <div class="card-body p-0">
+                        @php
+                            $fields = [
+                                ['label' => 'Applicant Name',  'value' => $application->full_name],
+                                ['label' => 'Passport Number', 'value' => $application->passport_number],
+                                ['label' => 'Ack. Reference',  'value' => $application->ack_ref_number],
+                                ['label' => 'Submitted',       'value' => $application->submitted_at?->format('d M Y, h:i A')],
+                            ];
+                        @endphp
                         <dl class="mb-0">
-                            @php
-                                $details = [
-                                    ['label' => 'Applicant Name',     'value' => $application->full_name],
-                                    ['label' => 'Passport Number',    'value' => $application->passport_number],
-                                    ['label' => 'Acknowledgement Ref','value' => $application->ack_ref_number],
-                                    ['label' => 'Submitted At',       'value' => $application->submitted_at?->format('d M Y, h:i A')],
-                                ];
-                            @endphp
-                            @foreach($details as $i => $item)
-                                <div class="d-flex align-items-start gap-3 px-4 py-3 {{ $i < count($details) - 1 ? 'border-bottom' : '' }}">
-                                    <dt class="text-muted small fw-normal mb-0 flex-shrink-0" style="min-width: 140px;">{{ $item['label'] }}</dt>
-                                    <dd class="mb-0 fw-medium small text-truncate">{{ $item['value'] ?? '—' }}</dd>
+                            @foreach($fields as $i => $field)
+                                <div class="d-flex align-items-start gap-3 px-4 py-3 {{ $i < count($fields) - 1 ? 'border-bottom' : '' }}"
+                                     style="border-color: var(--gray-light) !important;">
+                                    <dt class="mb-0 small fw-normal flex-shrink-0"
+                                        style="color: var(--gray); min-width: 130px;">{{ $field['label'] }}</dt>
+                                    <dd class="mb-0 small fw-semibold" style="color: var(--dark); word-break: break-word;">
+                                        {{ $field['value'] ?? '—' }}
+                                    </dd>
                                 </div>
                             @endforeach
                         </dl>
@@ -133,30 +156,37 @@
 
             {{-- Next steps --}}
             <div class="col-lg-7">
-                <section class="card border-0 shadow-sm h-100" aria-labelledby="next-steps-heading">
-                    <div class="card-header bg-light border-bottom fw-semibold py-3" id="next-steps-heading">
-                        <i class="fas fa-list-ol me-2 text-muted" aria-hidden="true"></i>What Happens Next
+                <section class="content-card h-100 mb-0" aria-labelledby="nextsteps-heading">
+                    <div class="card-header">
+                        <h2 class="card-title" id="nextsteps-heading" style="font-size: 1rem;">
+                            <i class="fas fa-list-ol me-2" style="color: var(--primary);" aria-hidden="true"></i>
+                            What Happens Next
+                        </h2>
                     </div>
-                    <div class="card-body p-4">
-                        <ol class="mb-0 ps-0 list-unstyled">
+                    <div class="card-body">
+                        <ol class="list-unstyled mb-0 ps-0">
                             @php
                                 $steps = [
-                                    ['icon' => 'fa-download',         'title' => 'Save your acknowledgement slip', 'desc' => 'Download or print now — you will need it for follow-up queries.'],
-                                    ['icon' => 'fa-clock',            'title' => 'Await officer review',           'desc' => 'Processing typically takes 5–10 working days from submission.'],
-                                    ['icon' => 'fa-search',           'title' => 'Track your application',         'desc' => 'Use your application reference on the dashboard to monitor status updates.'],
-                                    ['icon' => 'fa-folder-open',      'title' => 'Keep your documents ready',      'desc' => 'An officer may request additional verification of uploaded documents.'],
+                                    ['icon' => 'fa-download',     'color' => 'primary', 'title' => 'Save your acknowledgement slip',
+                                     'desc'  => 'Download or print now — you will need it for any follow-up queries or support.'],
+                                    ['icon' => 'fa-clock',        'color' => 'warning',  'title' => 'Await officer review',
+                                     'desc'  => 'Processing typically takes 5–10 working days from the date of submission.'],
+                                    ['icon' => 'fa-tachometer-alt','color' => 'info',    'title' => 'Track on your dashboard',
+                                     'desc'  => 'Use your application reference number to monitor status updates.'],
+                                    ['icon' => 'fa-folder-open',  'color' => 'danger',   'title' => 'Keep documents ready',
+                                     'desc'  => 'An officer may request additional verification of uploaded documents.'],
                                 ];
                             @endphp
                             @foreach($steps as $i => $step)
                                 <li class="d-flex gap-3 {{ $i < count($steps) - 1 ? 'mb-3' : '' }}">
-                                    <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
-                                          style="width: 36px; height: 36px; min-width: 36px; background: rgba(30,132,73,0.1);"
-                                          aria-hidden="true">
-                                        <i class="fas {{ $step['icon'] }} small" style="color: var(--primary, #1E8449);"></i>
-                                    </span>
+                                    <div class="stat-icon {{ $step['color'] }} flex-shrink-0"
+                                         style="width: 36px; height: 36px; border-radius: 10px; font-size: 0.9rem;"
+                                         aria-hidden="true">
+                                        <i class="fas {{ $step['icon'] }}"></i>
+                                    </div>
                                     <div>
-                                        <div class="fw-semibold small">{{ $step['title'] }}</div>
-                                        <div class="text-muted small">{{ $step['desc'] }}</div>
+                                        <p class="mb-1 fw-semibold small" style="color: var(--dark);">{{ $step['title'] }}</p>
+                                        <p class="mb-0 small" style="color: var(--gray);">{{ $step['desc'] }}</p>
                                     </div>
                                 </li>
                             @endforeach
@@ -166,34 +196,31 @@
             </div>
         </div>
 
-        {{-- Acknowledgement preview --}}
-        <section class="card border-0 shadow-sm mb-4" aria-labelledby="ack-preview-heading">
-            <div class="card-header bg-light border-bottom py-3" id="ack-preview-heading">
-                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                    <div>
-                        <span class="fw-semibold">
-                            <i class="fas fa-file-alt me-2 text-muted" aria-hidden="true"></i>Acknowledgement Slip Preview
-                        </span>
-                        <span class="d-block d-sm-inline small text-muted ms-sm-2">Official document for your records</span>
-                    </div>
-                    <a href="{{ route('applications.acknowledgement', $application) }}"
-                       class="btn btn-sm btn-outline-primary"
-                       target="_blank" rel="noopener noreferrer"
-                       aria-label="Open full printable acknowledgement slip">
-                        <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>Open Full Version
-                    </a>
-                </div>
+        {{-- ── Acknowledgement preview ───────────────────────────────── --}}
+        <section class="content-card" aria-labelledby="ack-preview-heading" style="margin-bottom: 1.5rem !important;">
+            <div class="card-header">
+                <h2 class="card-title" id="ack-preview-heading" style="font-size: 1rem;">
+                    <i class="fas fa-file-alt me-2" style="color: var(--primary);" aria-hidden="true"></i>
+                    Acknowledgement Slip Preview
+                </h2>
+                <a href="{{ route('applications.acknowledgement', $application) }}"
+                   class="btn btn-outline-primary btn-sm"
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="Open full printable acknowledgement slip in a new tab">
+                    <i class="fas fa-external-link-alt me-1" aria-hidden="true"></i>Full Version
+                </a>
             </div>
-            <div class="card-body p-3 p-md-4 bg-light">
+            <div class="card-body" style="background: var(--light);">
                 @include('partials.acknowledgement', ['application' => $application, 'isStandalone' => false])
             </div>
         </section>
 
-        {{-- Footer navigation --}}
-        <nav class="d-flex flex-column flex-sm-row gap-2 justify-content-end" aria-label="Page navigation">
+        {{-- ── Footer navigation ────────────────────────────────────── --}}
+        <nav class="d-flex flex-column flex-sm-row gap-2 justify-content-end pb-2"
+             aria-label="Page navigation actions">
             <a href="{{ route('dashboard') }}"
                class="btn btn-outline-secondary"
-               aria-label="Return to dashboard">
+               aria-label="Return to your dashboard">
                 <i class="fas fa-home me-2" aria-hidden="true"></i>Back to Dashboard
             </a>
             <a href="{{ route('applications.create') }}"

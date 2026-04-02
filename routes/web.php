@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\Admin\ApplicationReviewController;
 use App\Http\Controllers\Web\Admin\ReviewerDashboardController;
 use App\Http\Controllers\Web\Admin\UserManagementController;
 use App\Http\Controllers\Web\ApplicationController;
+use App\Http\Controllers\Web\Auth\EmailVerificationController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\LandingController;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +18,22 @@ Route::post('/login', [LandingController::class, 'login'])->name('login.post');
 Route::post('/register', [LandingController::class, 'register'])->name('register');
 Route::post('/logout', [LandingController::class, 'logout'])->middleware('auth')->name('logout');
 
-// ── Authenticated user ────────────────────────────────────────
+// ── Email verification ────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
+        ->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.resend');
+});
+
+// ── Authenticated + verified user ────────────────────────────
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/applications/create', [ApplicationController::class, 'create'])->name('applications.create');

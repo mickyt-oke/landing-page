@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\StoreApplicationRequest;
+use App\Mail\ApplicationAcknowledgement;
 use App\Models\Application;
 use App\Models\ApplicationDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -74,6 +76,9 @@ class ApplicationController extends Controller
 
             return $application;
         });
+
+        Mail::to($application->user->email)
+            ->send(new ApplicationAcknowledgement($application->load('user')));
 
         return redirect()
             ->route('applications.success', $application)

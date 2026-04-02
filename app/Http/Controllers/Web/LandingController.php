@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Mail\VerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class LandingController extends Controller
@@ -87,6 +89,16 @@ class LandingController extends Controller
 
             $user = Auth::guard('web')->user();
 
+            if (! $user->hasVerifiedEmail()) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()
+                    ->withErrors(['email' => 'Please verify your email address before logging in. Check your inbox for the verification link.'])
+                    ->onlyInput('email');
+            }
+
             if ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard');
             }
@@ -115,7 +127,7 @@ class LandingController extends Controller
     {
         $validated = $request->validated();
 
-        \App\Models\User::create([
+        $user = \App\Models\User::create([
             'name' => trim($validated['sname'].' '.$validated['fname']),
             'surname' => $validated['sname'],
             'first_name' => $validated['fname'],
@@ -128,7 +140,9 @@ class LandingController extends Controller
             'role' => \App\Models\User::ROLE_USER,
         ]);
 
+        Mail::to($user->email)->send(new VerifyEmail($user));
+
         return redirect('/')
-            ->with('success', 'Registration successful. Please log in to continue.');
+            ->with('success', 'Registration successful. Please check your email to verify your address before logging in.');
     }
 }

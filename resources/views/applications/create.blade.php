@@ -191,7 +191,7 @@
                 </div>
             </div>
 
-            {{-- ── Step 2: Travel Info ──────────────────────── --}}
+            {{-- ── Step 2: Travel Info ─── --}}
             <div id="panel2" class="wizard-panel" role="tabpanel" aria-labelledby="wizStep2" hidden>
 
                 <div class="wizard-panel-header">
@@ -226,10 +226,29 @@
                             <option value="">Select type</option>
                             <option value="F2A" {{ old('svv_subcategory') === 'F2A' ? 'selected' : '' }}>F2A</option>
                             <option value="F3A" {{ old('svv_subcategory') === 'F3A' ? 'selected' : '' }}>F3A</option>
+			    <option value="F3B" {{ old('svv_subcategory') === 'F3B' ? 'selected' : '' }}>F3B</option>
                             <option value="F4A" {{ old('svv_subcategory') === 'F4A' ? 'selected' : '' }}>F4A</option>
-                            <option value="F4B" {{ old('svv_subcategory') === 'F4B' ? 'selected' : '' }}>F4B</option>
-                            <option value="F5A" {{ old('svv_subcategory') === 'F5A' ? 'selected' : '' }}>F5A</option>
-                            <option value="F6A" {{ old('svv_subcategory') === 'F6A' ? 'selected' : '' }}>F6A</option>
+			    <option value="F4B" {{ old('svv_subcategory') === 'F4B' ? 'selected' : '' }}>F4B</option>
+                            <option value="F4C" {{ old('svv_subcategory') === 'F4C' ? 'selected' : '' }}>F4C</option>
+			    <option value="F6A" {{ old('svv_subcategory') === 'F6A' ? 'selected' : '' }}>F6A</option>
+                            <option value="F6B" {{ old('svv_subcategory') === 'F6B' ? 'selected' : '' }}>F6B</option>
+                            <option value="F7A" {{ old('svv_subcategory') === 'F7A' ? 'selected' : '' }}>F7A</option>
+                            <option value="F7B" {{ old('svv_subcategory') === 'F7B' ? 'selected' : '' }}>F7B</option>
+ 			    <option value="F7C" {{ old('svv_subcategory') === 'F7C' ? 'selected' : '' }}>F7C</option>
+                            <option value="F7D" {{ old('svv_subcategory') === 'F7D' ? 'selected' : '' }}>F7D</option>
+                            <option value="F7E" {{ old('svv_subcategory') === 'F7E' ? 'selected' : '' }}>F7E</option>
+                            <option value="F7F" {{ old('svv_subcategory') === 'F7F' ? 'selected' : '' }}>F7F</option>
+                            <option value="F7G" {{ old('svv_subcategory') === 'F7G' ? 'selected' : '' }}>F7G</option>
+                            <option value="F7H" {{ old('svv_subcategory') === 'F7H' ? 'selected' : '' }}>F7H</option>
+			    <option value="F7I" {{ old('svv_subcategory') === 'F7I' ? 'selected' : '' }}>F7I</option>
+                            <option value="F7J" {{ old('svv_subcategory') === 'F7J' ? 'selected' : '' }}>F7J</option>
+                            <option value="F7K" {{ old('svv_subcategory') === 'F7K' ? 'selected' : '' }}>F7K</option>
+                            <option value="F7L" {{ old('svv_subcategory') === 'F7L' ? 'selected' : '' }}>F7L</option>
+			    <option value="F7M" {{ old('svv_subcategory') === 'F7M' ? 'selected' : '' }}>F7M</option>
+                            <option value="F9A" {{ old('svv_subcategory') === 'F9A' ? 'selected' : '' }}>F9A</option>
+                            <option value="F9B" {{ old('svv_subcategory') === 'F9B' ? 'selected' : '' }}>F9B</option>
+			   
+
                         </select>
                     </div>
 
@@ -237,9 +256,17 @@
                         <label for="trv_subcat">TRV Sub-category</label>
                         <select id="trv_subcat" name="trv_subcategory" class="field-input">
                             <option value="">Select type</option>
+                            <option value="R1A" {{ old('trv_subcategory') === 'R1A' ? 'selected' : '' }}>R1A</option>
                             <option value="R2A" {{ old('trv_subcategory') === 'R2A' ? 'selected' : '' }}>R2A</option>
+			    <option value="R5A" {{ old('trv_subcategory') === 'R5A' ? 'selected' : '' }}>R5A</option>
                             <option value="R6A" {{ old('trv_subcategory') === 'R6A' ? 'selected' : '' }}>R6A</option>
+			    <option value="R7A" {{ old('trv_subcategory') === 'R7A' ? 'selected' : '' }}>R7A</option>
+                            <option value="R8A" {{ old('trv_subcategory') === 'R8A' ? 'selected' : '' }}>R8A</option>
+			    <option value="R9A" {{ old('trv_subcategory') === 'R9A' ? 'selected' : '' }}>R9A</option>
+                            <option value="R10" {{ old('trv_subcategory') === 'R10' ? 'selected' : '' }}>R10</option>
+			    <option value="R11" {{ old('trv_subcategory') === 'R11' ? 'selected' : '' }}>R11</option>
                         </select>
+
                     </div>
 
                     <div class="form-field">
@@ -710,15 +737,24 @@
     var trvField   = document.getElementById('trvCategory');
 
     function syncVisaSubcat() {
-        var val = visaSelect ? visaSelect.value : '';
-        if (svvField) svvField.hidden = (val !== 'SVV');
-        if (trvField) trvField.hidden = (val !== 'TRV');
+        var val    = visaSelect ? visaSelect.value : '';
+        var isSVV  = val === 'SVV';
+        var isTRV  = val === 'TRV';
 
-        // Clear subcategory fields when main category changes
         var svvSubcat = document.getElementById('svv_subcat');
         var trvSubcat = document.getElementById('trv_subcat');
-        if (val !== 'SVV' && svvSubcat) svvSubcat.selectedIndex = 0;
-        if (val !== 'TRV' && trvSubcat) trvSubcat.selectedIndex = 0;
+
+        if (svvField) svvField.hidden = !isSVV;
+        if (trvField) trvField.hidden = !isTRV;
+
+        if (svvSubcat) {
+            svvSubcat.disabled = !isSVV;
+            if (!isSVV) svvSubcat.selectedIndex = 0;
+        }
+        if (trvSubcat) {
+            trvSubcat.disabled = !isTRV;
+            if (!isTRV) trvSubcat.selectedIndex = 0;
+        }
     }
 
     if (visaSelect) {
@@ -736,6 +772,7 @@
         if (reasonOtherWrap) reasonOtherWrap.hidden = !isOther;
         if (reasonOtherInp) {
             reasonOtherInp.required = isOther;
+            reasonOtherInp.disabled = !isOther;
             if (!isOther) reasonOtherInp.value = '';
         }
     }

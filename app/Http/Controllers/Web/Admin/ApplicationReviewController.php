@@ -7,9 +7,11 @@ use App\Http\Requests\Web\ApproveApplicationRequest;
 use App\Http\Requests\Web\RejectApplicationRequest;
 use App\Http\Requests\Web\StartReviewRequest;
 use App\Http\Requests\Web\VetApplicationRequest;
+use App\Mail\ApplicationApproved;
 use App\Models\Application;
 use App\Models\ApplicationDocument;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class ApplicationReviewController extends Controller
@@ -62,6 +64,10 @@ class ApplicationReviewController extends Controller
             'reviewed_at'      => now(),
             'reviewed_by'      => (int) $request->user()->id,
         ]);
+
+        $application->loadMissing('user');
+        Mail::to($application->user->email)
+            ->send(new ApplicationApproved($application));
 
         return back()->with('status', 'Application approved successfully.');
     }

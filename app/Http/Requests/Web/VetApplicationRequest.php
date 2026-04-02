@@ -6,11 +6,11 @@ use App\Models\Application;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RejectApplicationRequest extends FormRequest
+class VetApplicationRequest extends FormRequest
 {
     /**
-     * Reviewers can reject; admins/superadmins can also reject.
-     * Application must be under_review.
+     * Reviewer submits vetting notes on an under_review application.
+     * Accessible by: reviewer, admin, superadmin.
      */
     public function authorize(): bool
     {
@@ -33,7 +33,6 @@ class RejectApplicationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rejection_reason' => ['required', 'string', 'max:191'],
             'reviewer_comment' => ['required', 'string', 'max:2000'],
         ];
     }

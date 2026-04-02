@@ -60,15 +60,14 @@ class AuthController extends Controller
         if (!$token = Auth::guard('api')->attempt($credentials)) {
             return response()->json(['error' => 'Invalid credentials.'], 401);
         }
-
+        // return user details along with token and redirect route based on role in the response (user->dashboard, admin->admin/dashboard)
         return response()->json([
             'message' => 'Logged in successfully.',
             'user' => Auth::guard('api')->user(),
-            'role' => Auth::guard('api')->user()->role,
-            'route' => $this->getRedirectRoute(Auth::guard('api')->user()->role),
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
+            'redirect_route' => $this->getRedirectRoute(Auth::guard('api')->user()->role),
         ]);
     }   
 

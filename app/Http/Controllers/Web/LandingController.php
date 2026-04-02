@@ -71,21 +71,35 @@ class LandingController extends Controller
 
         return view('faq', compact('faqItems' , 'countries'));
     }
-
+/** 
+ * *Login function with redirect to dashboard on success, or back to landing page with error on failure
+ * *Redirect authenticated users to /dashboard
+ * *Redirect authenticated admin users to /admin/dashboard
+ * * Registration function to create new user accounts, with validation and redirect back to landing page with success message
+ * * Logout function to end user session and redirect back to landing page
+**/    
     public function login(LoginRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
 
-        if (! Auth::guard('web')->attempt($credentials)) {
-            return redirect('/')
-                ->withErrors(['email' => 'Invalid email or password.'])
-                ->withInput();
+        if (Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            $user = Auth::guard('web')->user();
+
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+            if ($user->isReviewer()) {
+                return redirect()->route('admin.reviewer.dashboard');
+            }
+
+            return redirect()->route('dashboard');
         }
 
-        $request->session()->regenerate();
-        $request->session()->flash('success', 'Logged in successfully.');
-
-        return redirect()->intended(route('dashboard'));
+        return back()
+            ->withErrors(['email' => 'The provided credentials do not match system records.'])
+            ->onlyInput('email');
     }
 
     public function logout(Request $request): RedirectResponse

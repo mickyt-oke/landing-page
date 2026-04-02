@@ -1,3 +1,12 @@
+# ============================================================
+#  public/.htaccess — Laravel front-controller & hardening
+# ============================================================
+
+# ── Directory listing ────────────────────────────────────────
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -5,21 +14,75 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # ── Block robots / automated scanners ───────────────────
+    RewriteCond %{HTTP_USER_AGENT} (AhrefsBot|MJ12bot|DotBot|SemrushBot|Baiduspider|Yandex|PetalBot|DataForSeoBot|serpstatbot|seekport|ZoominfoBot|Bytespider) [NC]
+    RewriteRule .* - [F,L]
+
+    # ── Block empty User-Agent (most scrapers / scanners) ───
+    RewriteCond %{HTTP_USER_AGENT} ^-?$
+    RewriteRule .* - [F,L]
+
+    # ── Block access to dot-files (except .well-known) ──────
+    RewriteRule (^|/)\.(?!well-known) - [F,L]
+
+    # ── Deny direct PHP execution outside index.php ─────────
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_FILENAME} !index\.php$
+    RewriteRule \.php$ - [F,L]
+
+    # ── Preserve Authorization & XSRF headers ───────────────
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # ── Remove trailing slashes (not a folder) ───────────────
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # ── Route everything to Laravel front controller ─────────
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# ── Block robots at the HTTP level ──────────────────────────
+<IfModule mod_headers.c>
+    # Instruct all crawlers not to index or follow links
+    Header always set X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
+
+    # Security headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+
+    # Remove server fingerprinting headers
+    Header always unset X-Powered-By
+    Header always unset Server
+</IfModule>
+
+# ── Protect sensitive file extensions ───────────────────────
+<FilesMatch "\.(env|log|sql|sqlite|lock|bak|swp|sh|bat|pem|key|crt)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ── Cache static assets ──────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css             "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/png            "access plus 1 year"
+    ExpiresByType image/jpeg           "access plus 1 year"
+    ExpiresByType image/svg+xml        "access plus 1 year"
+    ExpiresByType image/x-icon         "access plus 1 year"
+    ExpiresByType font/woff2           "access plus 1 year"
 </IfModule>

@@ -1,0 +1,37 @@
+# ============================================================
+#  Root .htaccess — Nigeria Immigration Service Portal
+#  Redirects all requests into public/ (Laravel front controller)
+# ============================================================
+
+# ── Directory listing ────────────────────────────────────────
+Options -Indexes -MultiViews
+
+# ── Block all robots at the root level ──────────────────────
+# Search engines and crawlers must not index anything outside public/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block common robots / scanners by User-Agent
+    RewriteCond %{HTTP_USER_AGENT} (AhrefsBot|MJ12bot|DotBot|SemrushBot|Baiduspider|Yandex|PetalBot|DataForSeoBot|serpstatbot|seekport|ZoominfoBot|Bytespider) [NC]
+    RewriteRule .* - [F,L]
+
+    # Deny direct access to sensitive project directories
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$) - [F,L]
+
+    # Deny access to dot-files and dot-directories (except .well-known)
+    RewriteRule (^|/)\.(?!well-known) - [F,L]
+
+    # Deny access to common sensitive files
+    RewriteRule \.(env|log|sql|sqlite|lock|json|yaml|yml|bak|swp|sh|bat)$ - [F,L]
+
+    # Redirect everything else to public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# ── Security headers (root level) ───────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>

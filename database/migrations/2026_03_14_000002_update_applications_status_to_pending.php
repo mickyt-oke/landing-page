@@ -18,8 +18,8 @@ return new class extends Migration
 
         // Keep migrations portable across DB drivers (tests use sqlite in-memory).
         if (DB::getDriverName() === 'mysql') {
-            DB::statement("DROP INDEX IF EXISTS applications_status_index ON applications");
-            DB::statement("DROP INDEX IF EXISTS applications_created_at_status_index ON applications");
+            $this->dropMysqlIndexIfExists('applications', 'applications_status_index');
+            $this->dropMysqlIndexIfExists('applications', 'applications_created_at_status_index');
 
             DB::statement("
                 ALTER TABLE applications
@@ -42,8 +42,8 @@ return new class extends Migration
             ->update(['status' => 'submitted']);
 
         if (DB::getDriverName() === 'mysql') {
-            DB::statement("DROP INDEX IF EXISTS applications_status_index ON applications");
-            DB::statement("DROP INDEX IF EXISTS applications_created_at_status_index ON applications");
+            $this->dropMysqlIndexIfExists('applications', 'applications_status_index');
+            $this->dropMysqlIndexIfExists('applications', 'applications_created_at_status_index');
 
             DB::statement("
                 ALTER TABLE applications
@@ -57,5 +57,21 @@ return new class extends Migration
             $table->dropIndex('applications_user_id_status_index');
             $table->dropIndex('applications_created_at_status_index');
         });
+    }
+
+    private function dropMysqlIndexIfExists(string $table, string $index): void
+    {
+        $exists = DB::select(
+            "SELECT 1 FROM information_schema.statistics
+             WHERE table_schema = DATABASE()
+               AND table_name = ?
+               AND index_name = ?
+             LIMIT 1",
+            [$table, $index]
+        );
+
+        if ($exists) {
+            DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$index}`");
+        }
     }
 };

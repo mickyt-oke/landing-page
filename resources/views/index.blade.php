@@ -4,9 +4,9 @@
   <!-- Meta Tags for SEO -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing Page | Foreigners Registration</title>
+  <title>Landing Page | Foreigners Registration Portal</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https:;">
-  <meta name="description" content="Apply for overstay clearance with the Nigeria Immigration Service. Regularize your status, avoid penalties, and stay compliant with immigration regulations. Fast, secure, and transparent application process.">
+  <meta name="description" content="Foreigners Registration Portal by the Nigeria Immigration Service. Apply now to avoid overstay penalties. Submit your documents, stay compliant with immigration regulations, and receive email updates on your application status.">
   <meta name="keywords" content="Nigeria Immigration Service, NIS, overstay clearance, visa regularization, immigration compliance, migrant portal, document upload, application process">
   <meta name="author" content="Nigeria Immigration Service">
   <meta name="robots" content="index, follow">
@@ -503,6 +503,41 @@
   <!-- Scripts -->
   <script src="{{ asset('assets/js/carousel.js') }}" defer></script>
   <script src="{{ asset('assets/js/app.js') }}" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Welcome Banner Logic
+    const welcomeBanner = document.getElementById('welcomeBanner');
+    const welcomeCloseBtn = document.getElementById('welcomeClose');
+    welcomeCloseBtn.addEventListener('click', function() {
+      welcomeBanner.classList.add('hidden');
+      document.getElementById('consentBanner').classList.remove('hidden');
+    });
 
+    // Consent Banner Logic
+    const consentBanner = document.getElementById('consentBanner');
+    document.getElementById('consentAccept').addEventListener('click', function() {
+      localStorage.setItem('consentGiven', 'true');
+      consentBanner.classList.add('hidden');
+    });
+    document.getElementById('consentDecline').addEventListener('click', function() {
+      alert('You have declined data collection. Some features may not work properly.');
+      consentBanner.classList.add('hidden');
+    });
+
+    // Check if consent was already given    if (localStorage.getItem('consentGiven') === 'true') {
+      consentBanner.classList.add('hidden');
+    });
+
+    // Flash Message Logic
+    const flashSuccess = document.querySelector('meta[name="flash-success"]');
+    const flashError = document.querySelector('meta[name="flash-error"]');
+    if (flashSuccess) {
+      alert(flashSuccess.getAttribute('content'));
+    }
+    if (flashError) {
+      alert(flashError.getAttribute('content'));
+    }
+  });   
+</script>
 </body>
 </html>

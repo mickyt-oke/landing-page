@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 // ── Public ────────────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
-Route::get('/login',  [LandingController::class, 'index'])->name('login');
 Route::post('/login', [LandingController::class, 'login'])->name('login.post');
 Route::post('/register', [LandingController::class, 'register'])->name('register');
 Route::post('/logout', [LandingController::class, 'logout'])->middleware('auth')->name('logout');

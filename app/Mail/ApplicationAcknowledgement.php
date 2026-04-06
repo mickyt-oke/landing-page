@@ -18,6 +18,7 @@ class ApplicationAcknowledgement extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: config('mail.from'),
             subject: 'Application Received – Ref: ' . $this->application->ack_ref_number,
         );
     }

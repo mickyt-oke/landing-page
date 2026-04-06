@@ -18,6 +18,7 @@ class ApplicationApproved extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: config('mail.from'),
             subject: 'Application Approved – Ref: ' . $this->application->application_reference,
         );
     }

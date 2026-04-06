@@ -25,6 +25,7 @@ class VerifyEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: config('mail.from'),
             subject: 'Verify Your Email Address – Nigeria Immigration Service Portal',
         );
     }

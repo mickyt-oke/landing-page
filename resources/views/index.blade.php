@@ -186,8 +186,8 @@
           <li>This portal is strictly for eligible foreign nationals currently in Nigeria.</li>
           <li>Ensure your passport, visa, entry stamp, and return ticket are ready for upload.</li>
           <li>All submitted information is subject to verification by NIS officials.</li>
-          <li>Applications are reviewed within 5–10 working days of submission.</li>
-          <li>Providing false information is a criminal offence under Nigerian   Laws.</li>
+          <li>Applications are reviewed within five (5) working days of submission.</li>
+          <li>Providing false information is a criminal offence under Nigerian Laws.</li>
         </ul>
       </div>
       <div class="welcome-modal-footer">

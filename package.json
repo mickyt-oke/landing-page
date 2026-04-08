@@ -11,6 +11,7 @@
         "axios": "^1.14.0",
         "concurrently": "^9.2.1",
         "laravel-vite-plugin": "^3.0.1",
+        "supabase": "^2.87.1",
         "tailwindcss": "^4.2.2",
         "vite": "^8.0.3"
     }

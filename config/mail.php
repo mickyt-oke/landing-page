@@ -40,13 +40,13 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
-            'url' => env('MAIL_URL'),
+            'url' => env('MAIL_URL') ?: null,
             'host' => env('MAIL_HOST', 'smtp.gmail.com'),
             'port' => env('MAIL_PORT', 587),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST),
+            'local_domain' => parse_url((string) env('APP_URL'), PHP_URL_HOST),
         ],
 
         'ses' => [

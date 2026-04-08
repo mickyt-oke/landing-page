@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'NIS_Landing_Page'),
+    'name' => env('APP_NAME', 'NIS_Foreigners_Registration_Portal'),
 
     /*
     |--------------------------------------------------------------------------

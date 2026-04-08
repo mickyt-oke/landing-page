@@ -6,7 +6,7 @@
     <title>User Dashboard | Foreigners Registration</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="author" content="Nigeria Immigration Service">
-    <meta name="description" content="User dashboard for managing overstay clearance applications with Nigeria Immigration Service">
+    <meta name="description" content="User dashboard for managing foreigners registration for perssons affected by the middle-east crisis with the Nigeria Immigration Service">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

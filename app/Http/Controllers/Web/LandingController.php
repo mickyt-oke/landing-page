@@ -123,6 +123,7 @@ class LandingController extends Controller
 
         return redirect('/');
     }
+
     public function register(RegisterRequest $request): RedirectResponse
     {
         $validated = $request->validated();

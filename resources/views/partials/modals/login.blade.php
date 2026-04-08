@@ -77,6 +77,14 @@
           <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
         </button>
 
+        {{-- Password reset/Forgot Password div --}}
+          <div class="password-reset">
+            <a href="{{ route('password.request') }}" class="password-reset-link">
+              <i class="fas fa-unlock-alt" aria-hidden="true"></i> Forgot Password?
+            </a>  
+        </div>
+
+
         <div class="modal-footer">
           Don't have an account?
           <a href="#" class="modal-switch-trigger" data-from="login" data-to="register">Register here</a>

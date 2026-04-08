@@ -69,7 +69,14 @@ class AuthController extends Controller
             'expires_in' => app(JWTGuard::class)->factory()->getTTL() * 60,
             'redirect_route' => $this->getRedirectRoute(Auth::guard('api')->user()->role),
         ]);
-    }   
+    }
+    
+    public function passwordreset(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Password reset link sent successfully.',
+        ]);
+    }
 
     public function me(): JsonResponse
     {

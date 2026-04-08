@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Admin\ReviewerDashboardController;
 use App\Http\Controllers\Web\Admin\UserManagementController;
 use App\Http\Controllers\Web\ApplicationController;
 use App\Http\Controllers\Web\Auth\EmailVerificationController;
+use App\Http\Controllers\Web\Auth\PasswordResetController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\LandingController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/faq', [LandingController::class, 'faq'])->name('faq');
 Route::post('/login', [LandingController::class, 'login'])->name('login.post');
 Route::post('/register', [LandingController::class, 'register'])->name('register');
+Route::get('/password/forgot', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
+Route::post('/password/email', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [PasswordResetController::class, 'reset'])->name('password.update');
 Route::post('/logout', [LandingController::class, 'logout'])->middleware('auth')->name('logout');
 
 // ── Email verification ────────────────────────────────────────

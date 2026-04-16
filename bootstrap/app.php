@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Use explicit limiter (name + rate) so we don't depend on a missing RateLimiter "api" definition.
         // This prevents 500 errors like: "Rate limiter [api] is not defined."
         $middleware->throttleApi('60,1');
+        $middleware->redirectGuestsTo(fn () => route('home'));
 
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,

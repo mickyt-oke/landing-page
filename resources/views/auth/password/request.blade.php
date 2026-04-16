@@ -228,6 +228,7 @@
 </div>
        </div>
     </div>
+    </main>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>

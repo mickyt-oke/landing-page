@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Web\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -25,16 +26,25 @@ class EmailVerificationController extends Controller
     /**
      * Handle the signed email verification link.
      */
-    public function verify(EmailVerificationRequest $request): RedirectResponse
+    public function verify(Request $request, int $id, string $hash): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('dashboard')->with('status', 'Email already verified.');
+        $user = User::query()->findOrFail($id);
+
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403);
         }
 
-        $request->fulfill();
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('home')
+                ->with('success', 'Email already verified. You can log in to continue.');
+        }
 
-        return redirect()->route('dashboard')
-            ->with('status', 'Email verified successfully. Welcome to the portal!');
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect()->route('home')
+            ->with('success', 'Email verified successfully. You can now log in to continue.');
     }
 
     /**

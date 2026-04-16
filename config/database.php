@@ -96,7 +96,6 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'endpoint_id' => env('DB_ENDPOINT_ID'),
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 

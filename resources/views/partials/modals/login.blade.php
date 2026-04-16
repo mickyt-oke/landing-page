@@ -78,11 +78,13 @@
         </button>
 
         {{-- Password reset/Forgot Password div --}}
+        @if (Route::has('password.request'))
           <div class="password-reset">
             <a href="{{ route('password.request') }}" class="password-reset-link">
               <i class="fas fa-unlock-alt" aria-hidden="true"></i> Forgot Password?
-            </a>  
-        </div>
+            </a>
+          </div>
+        @endif
 
 
         <div class="modal-footer">
